@@ -1,6 +1,9 @@
 source .venv/bin/activate
   
-# 2. Check live ALB is healthy
+# 2. Automated Smoke Test (Verifies /, /health, and /work in 2 seconds)
+python loadtest/local_smoke_test.py http://hotstar-alb-2011340704.ap-south-1.elb.amazonaws.com
+
+# 3. Check live ALB health check directly
 curl -s http://hotstar-alb-2011340704.ap-south-1.elb.amazonaws.com/health | jq .
   
 # 3. Test CPU endpoint

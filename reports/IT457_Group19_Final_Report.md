@@ -216,16 +216,36 @@ All figures were compiled by `analysis/plot.py` from raw experimental logs:
 ![Latency and Capacity Time Series](figures/response_vs_instances.png)
 *Figure 6: Time Series Deliverable F1 — Response Time & In-Service Capacity Over Time. Dual-axis graph illustrating the 779-second test lifecycle, showing traffic surge, scale-out lag peak, instance step-ups (1 to 4), and post-test scale-in recovery.*
 
-### 6.2 AWS Console Screenshot Catalog ([`results/screenshots/`](file:///home/drixo/Projects/hotstar-cloud-scaling/results/screenshots/))
-1. `01_alb_live_url.png`: Live ALB URL in browser returning HTTP 200 JSON with instance ID.
-2. `02_hostar_tg_healthyInst.png`: Target Group `hotstar-tg` with 1 healthy instance prior to test.
-3. `03_ASG_a.png` & `04_ASG_b.png`: ASG `hotstar-asg` configuration showing Min: 1, Desired: 1, Max: 4, and 1-minute metrics.
-4. `05_cloudwatch_50pct_alarm.png`: 1-hour CloudWatch graph showing CPU crossing the red 50% threshold to 59.25% (`In alarm`).
-5. `06_EC2_inst_scale.png`: ASG Activity history showing scale-out launches triggered by the alarm.
-6. `07_EC2_tg.png`: Target Group showing all 4 instances in **Healthy** status sharing load.
-7. `08_locust.png` & `09_locust2.png`: Locust terminal summary showing 55,910 requests and percentile breakdown.
-8. `10_draining.png`: Target Group showing instance `i-00a2e5...` in **`Draining`** status during post-test scale-in.
-9. `11_draining_asg.png`: ASG Activity history showing clean VM termination triggered by `hotstar-cpu-low-scale-in`.
+### 6.2 AWS Console Screenshot Evidence Dossier
+
+To fulfill course deliverable requirements, all core AWS Management Console milestones were captured during the live testing execution:
+
+![Live Application Load Balancer HTTP 200 Response](figures/screenshots/01_alb_live_url.png)
+*Figure 7: Live ALB Endpoint Verification. Public browser request to `hotstar-alb` returning HTTP 200 JSON with dynamic EC2 instance ID (`i-0af3ff28238614c6f`).*
+
+![Dual Availability Zone Network Mapping on ALB](figures/screenshots/12_hotstar_alb.png)
+*Figure 8: Dual Availability Zone Ingress Mapping. AWS ALB configuration showing active routing across `ap-south-1a` (`10.50.0.0/24`) and `ap-south-1b` (`10.50.1.0/24`) for regional high availability.*
+
+![Auto Scaling Group Capacity Overview and Dual-AZ Subnets](figures/screenshots/03_ASG_a.png)
+*Figure 9: Auto Scaling Group Configuration. `hotstar-asg` dashboard displaying Min: 1, Max: 4, Desired: 1, and Balanced best-effort distribution across `aps1-az1` and `aps1-az3`.*
+
+![CloudWatch CPU Utilization Alarm Breach](figures/screenshots/05_cloudwatch_50pct_alarm.png)
+*Figure 10: CloudWatch 50% CPU Alarm Breach. Real-time metric graph showing CPU utilization climbing to 59.25%, breaching the red 50% threshold line and transitioning to `In alarm`.*
+
+![Auto Scaling Group Activity History](figures/screenshots/06_EC2_inst_scale.png)
+*Figure 11: Auto Scaling Group Activity History. Sequential launch activities triggered by CloudWatch alarm `hotstar-cpu-high-scale-out`, automatically scaling desired capacity from 1 to 2, 2 to 3, and 3 to 4 instances.*
+
+![Target Group 4 Healthy Registered Targets](figures/screenshots/07_EC2_tg.png)
+*Figure 12: Target Group Multi-AZ In-Service Targets. `hotstar-tg` showing all 4 instances in `Healthy` state, evenly distributed across `ap-south-1a` (2 nodes) and `ap-south-1b` (2 nodes).*
+
+![Locust High-Traffic Benchmark Summary](figures/screenshots/08_locust.png)
+*Figure 13: Locust High-Traffic Benchmark Execution. Terminal summary showing 55,910 total requests executed with 0 failures (100% success rate on stabilized fleet) and millisecond latency percentiles.*
+
+![Target Group Connection Draining](figures/screenshots/10_draining.png)
+*Figure 14: Target Group Connection Draining. Post-test scale-in status showing instance `i-00a2e5...` in `Draining` state under a 30-second deregistration delay to complete active in-flight requests.*
+
+![ASG Clean Instance Termination](figures/screenshots/11_draining_asg.png)
+*Figure 15: ASG Clean Termination Activity. Activity log showing clean instance termination triggered by `hotstar-cpu-low-scale-in` once CPU dropped below 20%.*
 
 ---
 
