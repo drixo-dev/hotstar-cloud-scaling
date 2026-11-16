@@ -1,0 +1,328 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; margin: 40px; color: #222; }
+h1 { color: #0b3954; border-bottom: 2px solid #0b3954; padding-bottom: 8px; }
+h2 { color: #087e8b; margin-top: 24px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+h3 { color: #333; margin-top: 18px; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+th { background-color: #f4f7f9; color: #111; font-weight: bold; }
+tr:nth-child(even) { background-color: #fafbfc; }
+code { background: #f0f3f5; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+pre { background: #f5f7fa; padding: 12px; border-radius: 6px; overflow-x: auto; font-family: monospace; }
+blockquote { border-left: 4px solid #087e8b; margin: 0; padding-left: 16px; color: #555; }
+</style>
+</head><body><h1>Cloud Scaling for Live Cricket Streaming</h1>
+<h2>Hotstar Case Study and Auto-Scaling Proof of Concept</h2>
+<p><strong>Course:</strong> IT457 — Cloud Computing<br />
+<strong>Deliverable:</strong> Week 2 Detailed Report (Case Analysis, Architecture &amp; PoC Plan)<br />
+<strong>Group:</strong> 19<br />
+- <strong>Dhyey Patel (202301415)</strong> — Lead Cloud Systems Architect &amp; Infrastructure Engineer (Primary Lead)<br />
+- <strong>Jill Chhagnani (202301273)</strong> — Systems Research &amp; Case Study Lead (2nd Priority)<br />
+- <strong>Jay Patel (202301430)</strong> — Performance Analysis &amp; Cost Modeling Associate (3rd Priority)  </p>
+<p><strong>Date:</strong> Revised November 2026  </p>
+<hr />
+<h2>Executive Summary</h2>
+<p>Disney+ Hotstar (now JioHotstar) operates under an extreme infrastructure constraint: live cricket streaming traffic does not grow along smooth, predictable curves, but hits the backend as an abrupt, massive <strong>"tsunami"</strong>. Viewers join in millions within seconds of the match start, boundary hits, or unexpected wickets. Over eight years of platform growth, Hotstar's peak concurrent viewership surged more than thirteen-fold—from 4.7 million in 2017 to a company-reported <strong>61.2 million concurrent viewers</strong> during the 2025 ICC Champions Trophy final.</p>
+<p>Engineering post-mortems published by Hotstar reveal that traditional reactive autoscaling—relying on threshold alarms to detect high load and launch virtual machines—consistently failed during sudden traffic spikes. Virtual machine provisioning, operating system boot, container extraction, and load balancer health checks create an unavoidable <strong>scale-out lag</strong> of 2 to 4 minutes. In cricket, several million viewers arrive in under 90 seconds, causing request queues to overflow, latencies to spike into multi-second timeouts, and client retries to initiate cascading backend collapse before reactive capacity can come online.</p>
+<p>Hotstar resolved this bottleneck through a multi-tier defense:
+1. <strong>Pre-scaling with Concurrency Ladders (2018):</strong> Capacity was manually or programmatically scheduled ahead of matches based on historic viewership models.
+2. <strong>Containerization &amp; Custom Kubernetes Autoscalers (2019):</strong> Moving from EC2 VMs to containers cut boot times and reduced compute waste tenfold.
+3. <strong>Multi-Cluster Infrastructure &amp; Edge Protection (2023–2025):</strong> Slicing workloads across 6 managed EKS clusters, adopting Envoy API gateways, and shielding origins with CDNs (Akamai/CloudFront) with 95%+ cache offload.</p>
+<p>To evaluate the fundamental physics of cloud elasticity, Group 19 designs a small, rigorous <strong>Cloud Proof of Concept (PoC)</strong> on AWS following Theme 1 of the IT457 syllabus. The PoC implements a stateless <strong>Python FastAPI</strong> service deployed on EC2 <code>t3.micro</code> instances behind an <strong>Application Load Balancer (ALB)</strong> and managed by an <strong>Auto Scaling Group (ASG)</strong>. The group enforces an explicit CloudWatch alarm: <strong>if average CPU utilization exceeds 50%, add another instance</strong>. The system is evaluated under a match-shaped spike load using <strong>Locust</strong> to quantify latency, error rates, scale-out lag, and the performance relationship between response time and instance count.</p>
+<hr />
+<h2>1. Objectives, Scope, and Research Question</h2>
+<h3>1.1 Objectives</h3>
+<ol>
+<li><strong>Case Study Analysis:</strong> Synthesize primary engineering disclosures from Hotstar and AWS to document the evolution of traffic profiles, architectural bottlenecks, and cost levers.</li>
+<li><strong>Cloud Infrastructure Implementation:</strong> Provision a secure, automated 2-Availability-Zone cloud infrastructure on AWS using Infrastructure-as-Code (CloudFormation).</li>
+<li><strong>Elasticity Verification:</strong> Demonstrate that compute load exceeding 50% CPU automatically triggers dynamic scale-out (+1 instance) and traffic drops trigger scale-in.</li>
+<li><strong>Empirical Measurement:</strong> Quantify response time percentiles (p50, p95, p99), error rates, scale-out lag, and instance counts under an event-driven spike profile using Locust.</li>
+</ol>
+<h3>1.2 Research Question</h3>
+<blockquote>
+<p><em>Under a simulated live-event traffic spike, how do p95 response time, system throughput, and scale-out lag behave when a single-instance baseline is backed by an Application Load Balancer and an Auto Scaling Group enforcing a 50% CPU threshold?</em></p>
+</blockquote>
+<h3>1.3 Scope Boundary</h3>
+<ul>
+<li><strong>In Scope:</strong> Stateless Python FastAPI service (<code>/</code>, <code>/health</code>, <code>/work</code>), AWS 2-AZ VPC networking, Application Load Balancers, Target Groups, EC2 Auto Scaling Groups, CloudWatch alarms, Locust load generation, and Python performance analysis.</li>
+<li><strong>Out of Scope:</strong> Video encoding/transcoding pipelines, DRM licensing, edge CDN provider contracts, multi-region database replication, and any claim of matching Hotstar's 61.2M production concurrency on a student lab budget.</li>
+</ul>
+<hr />
+<h2>2. Case Background &amp; Traffic Profile</h2>
+<h3>2.1 Viewership Growth Evolution</h3>
+<p>Hotstar’s live cricket streaming records represent some of the highest concurrent digital broadcast events in internet history. All metrics below represent company-reported peak concurrency:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tournament Event</th>
+<th style="text-align: center;">Date</th>
+<th style="text-align: center;">Peak Concurrent Viewers</th>
+<th style="text-align: left;">Architectural Era</th>
+<th style="text-align: center;">Primary Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>IPL 2018 Final</strong></td>
+<td style="text-align: center;">May 2018</td>
+<td style="text-align: center;">10.3 Million</td>
+<td style="text-align: left;">EC2 Static Ladders</td>
+<td style="text-align: center;">Hotstar Blog (Apr 2018)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>IPL 2019 Final</strong></td>
+<td style="text-align: center;">May 2019</td>
+<td style="text-align: center;">18.6 Million</td>
+<td style="text-align: left;">Early Kubernetes Adoption</td>
+<td style="text-align: center;">Hotstar Blog (Oct 2019)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ICC World Cup Semi-Final</strong></td>
+<td style="text-align: center;">Jul 2019</td>
+<td style="text-align: center;">25.3 Million</td>
+<td style="text-align: left;">Self-Managed Kubernetes</td>
+<td style="text-align: center;">AWS re:Invent CMY302 (2019)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ICC World Cup 2023 Final</strong></td>
+<td style="text-align: center;">Nov 2023</td>
+<td style="text-align: center;">59.0 Million</td>
+<td style="text-align: left;">Managed Multi-Cluster EKS</td>
+<td style="text-align: center;">Deccan Herald / JioStar Release</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>IPL 2025 Final</strong></td>
+<td style="text-align: center;">May 2025</td>
+<td style="text-align: center;">55.0 Million</td>
+<td style="text-align: left;">Managed EKS + Envoy</td>
+<td style="text-align: center;">afaqs! Industry Report</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ICC Champions Trophy Final</strong></td>
+<td style="text-align: center;">Mar 2025</td>
+<td style="text-align: center;"><strong>61.2 Million</strong></td>
+<td style="text-align: left;">6 EKS Clusters + CDN Edge</td>
+<td style="text-align: center;">JioStar Company Disclosure</td>
+</tr>
+</tbody>
+</table>
+<h3>2.2 The "Tsunami" Traffic Dynamic</h3>
+<p>Unlike e-commerce (e.g., Amazon Prime Day) where traffic ramps up over hours, live cricket demand is hyper-concentrated:
+* <strong>The Match Start Shock:</strong> 6 to 8 million viewers launch the application within 120 seconds of the first ball. Watch-page API traffic jumps 400% to 500% in this two-minute window.
+* <strong>Wicket &amp; Boundary Spikes:</strong> A star player entering the pitch or a crucial wicket causes instant notification-driven traffic surges of 300% within 30 seconds.
+* <strong>Post-Match Drop:</strong> When the final ball is bowled, 70% of viewers exit the stream within 60 seconds, flooding homepage APIs with navigation requests before dropping to near-zero.
+* <strong>Scale-Out Lag Mathematics:</strong> In 2019, viewership grew at over <strong>1,000,000 users per minute</strong>. Standard EC2 instance launch, initialization, and health checks took roughly 2.5 minutes. Consequently, <strong>2.5 million users arrive before a single additional server can become healthy</strong>, proving why reactive scaling alone causes outages during cricket.</p>
+<hr />
+<h2>3. Architecture Across Three Eras</h2>
+<pre><code>ERA 1 (2018): EC2 + Concurrency Ladders
+[Viewers] ──&gt; [CloudFront/Akamai] ──&gt; [200+ Classic Load Balancers] ──&gt; [Static EC2 Pools]
+(Problem: Reactive scaling too slow; pre-scaling resulted in massive idle cost)
+
+ERA 2 (2019): Self-Managed Kubernetes &amp; Custom Autoscaler
+[Viewers] ──&gt; [CDN Edge] ──&gt; [ALBs] ──&gt; [2 Large K8s Clusters] ──&gt; [Custom Autoscaler Pods]
+(Outcome: 10x compute reduction; Problem: K8s master node bottlenecks &amp; IP exhaustion)
+
+ERA 3 (2023–2025): Multi-Cluster EKS &amp; Envoy Gateway
+[Viewers] ──&gt; [CDN Shield (95% cache)] ──&gt; [Envoy Gateway] ──&gt; [6 EKS Clusters as 1 DC]
+(Outcome: 61.2M peak concurrency; fine-grained subnetting and graceful degradation)
+</code></pre>
+<h3>Era 1 (2018): Monolithic EC2 and Static "Ladders"</h3>
+<ul>
+<li>Infrastructure: Monolithic services running directly on EC2 instances behind over 200 Classic Load Balancers.</li>
+<li>Scaling Strategy: Reactive autoscaling was disabled because it lagged behind traffic spikes. Instead, engineers used <strong>concurrency ladders</strong>: estimating viewer count 30 minutes in advance and pre-provisioning hundreds of idle EC2 instances.</li>
+<li>Limitations: Enormous cloud compute waste during slow matches; lack of flexibility if a match unexpectedly became thrilling; AWS API rate-limiting during bulk EC2 provisioning.</li>
+</ul>
+<h3>Era 2 (2019): Self-Managed Kubernetes &amp; Shadow Autoscaling</h3>
+<ul>
+<li>Infrastructure: Migration of core services to Docker containers running on two massive self-managed Kubernetes clusters on EC2.</li>
+<li>Scaling Strategy: Developed a proprietary custom autoscaler that evaluated traffic velocity rather than standard CPU alone. Ran the autoscaler in "shadow mode" for months before trusting it with production traffic.</li>
+<li>Outcomes: Delivered 2x peak concurrency (25.3M) with roughly <strong>10x less compute cost</strong> compared to Era 1 by packing containers tightly onto Spot instances.</li>
+<li>Bottlenecks: A single cluster with thousands of pods overwhelmed the Kubernetes API Server (etcd locking), and AWS VPC IP address pools ran out of allocatable IPs.</li>
+</ul>
+<h3>Era 3 (2023–2025): Multi-Cluster Managed EKS &amp; Envoy Mesh</h3>
+<ul>
+<li>Infrastructure: Sliced workloads across <strong>six Amazon EKS clusters</strong> unified under an Envoy API Gateway, eliminating over 200 individual load balancers that previously required pre-warming tickets with AWS support.</li>
+<li>Bottlenecks Solved:</li>
+<li><strong>IP Exhaustion:</strong> Moved from <code>/24</code> subnets to large <code>/19</code> subnets across multiple AZs.</li>
+<li><strong>NAT Gateway Bottleneck:</strong> Shifted NAT Gateways from per-AZ to per-subnet to prevent cross-AZ bandwidth saturation.</li>
+<li><strong>Controlled Degradation ("Jettison"):</strong> During peak spikes, non-critical features (comments, social feeds, recommendation widgets) are programmatically shed so video delivery manifests receive 100% of origin compute.</li>
+</ul>
+<hr />
+<h2>4. Cloud Proof of Concept (PoC) Design</h2>
+<h3>4.1 System Architecture</h3>
+<p>Following Theme 1 of the IT457 guide, our PoC isolates the <strong>compute elasticity and scale-out lag mechanics</strong> of the origin tier:</p>
+<pre><code>[Locust Load Generator (Laptop / External Client)]
+                     │ (Spike: 20 -&gt; 150 Users)
+                     ▼
+       [Application Load Balancer (Port 80)]
+                     │
+       ┌─────────────┴─────────────┐
+       ▼                           ▼
+[Subnet A (ap-south-1a)]     [Subnet B (ap-south-1b)]
+       │                           │
+  [hotstar-tg] (Port 8000)    [hotstar-tg] (Port 8000)
+  EC2 (t3.micro, FastAPI)     EC2 (t3.micro, FastAPI)
+       ▲                           ▲
+       └─────────────┬─────────────┘
+                     │
+         [Auto Scaling Group (1 to 4)]
+                     │
+      [CloudWatch Alarm: CPU &gt; 50%]
+</code></pre>
+<h3>4.2 Application Design (<code>app.py</code>)</h3>
+<p>The application is implemented in <strong>Python 3.12</strong> using <strong>FastAPI</strong> and served by <strong>Uvicorn</strong>:
+* <code>GET /</code>: Returns <code>{"status": "Stream available", "instance": INSTANCE_ID}</code>.
+* <code>GET /health</code>: Returns HTTP 200 <code>{"ok": true, "status": "healthy"}</code> for ALB health checking every 15 seconds.
+* <code>GET /work?n=300000</code>: Executes controlled arithmetic iterations, consuming ~30–50 ms of CPU per request. Under concurrent Locust streams, this drives multi-core CPU utilization above 50%, triggering the ASG alarm.</p>
+<h3>4.3 CloudFormation Infrastructure-as-Code (<code>hotstar-fastapi-cfn.yaml</code>)</h3>
+<ul>
+<li><strong>VPC:</strong> 2 Availability Zones (<code>10.50.0.0/16</code>) in <code>ap-south-1</code> (Mumbai) with public subnets and an Internet Gateway.</li>
+<li><strong>Security:</strong> ALB accepts public HTTP 80; EC2 instances accept port 8000 exclusively from the ALB security group.</li>
+<li><strong>Launch Template:</strong> Amazon Linux 2023 on Free Tier <code>t3.micro</code> (2 vCPUs, 1 GB RAM). Detailed CloudWatch monitoring enabled (1-minute metrics). EC2 UserData installs Python, writes <code>app.py</code>, and starts a systemd service with <code>workers=2</code>.</li>
+<li><strong>Auto Scaling Group:</strong> Min: 1, Desired: 1, Max: 4. Target Group health check grace period: 120s.</li>
+<li><strong>Scaling Policies &amp; Alarms:</strong></li>
+<li><strong>Scale-Out:</strong> CloudWatch Alarm triggers when average ASG CPU &gt; 50% for two consecutive 60-second periods $\rightarrow$ Adds 1 instance (+1) with a 120s cooldown.</li>
+<li><strong>Scale-In:</strong> CloudWatch Alarm triggers when average ASG CPU &lt; 20% for ten consecutive 60-second periods $\rightarrow$ Removes 1 instance (-1) with a 300s cooldown.</li>
+</ul>
+<hr />
+<h2>5. Experiment Plan &amp; Load Profile</h2>
+<h3>5.1 The Match-Shaped Load Profile</h3>
+<p>The load test is implemented in Python using <strong>Locust</strong> (<code>loadtest/locustfile.py</code>) to simulate an event-driven cricket surge:
+1. <strong>Stage 1 (0–120s):</strong> 20 users (steady match buildup baseline).
+2. <strong>Stage 2 (120–180s):</strong> Rapid ramp to 150 users (the match-start tsunami spike).
+3. <strong>Stage 3 (180–600s):</strong> 150 sustained users (holds pressure to test ASG scale-out and observe scale-out lag).
+4. <strong>Stage 4 (600–720s):</strong> Drop to 20 users (traffic subsides).
+5. <strong>Stage 5 (720–780s):</strong> Tail baseline recovery (observing scale-in connection draining).</p>
+<h3>5.2 Planned Experiments Table</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Run ID</th>
+<th style="text-align: left;">Configuration</th>
+<th style="text-align: center;">Min / Desired / Max</th>
+<th style="text-align: center;">Target Workload</th>
+<th style="text-align: left;">Objective</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>E0</strong></td>
+<td style="text-align: left;">Smoke Test</td>
+<td style="text-align: center;">1 / 1 / 1</td>
+<td style="text-align: center;">5 concurrent users</td>
+<td style="text-align: left;">Verify ALB health, <code>/health</code> 200 OK, and DNS resolution</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>E1</strong></td>
+<td style="text-align: left;">Baseline (Fixed)</td>
+<td style="text-align: center;">1 / 1 / 1</td>
+<td style="text-align: center;">150 users spike</td>
+<td style="text-align: left;">Measure latency degradation and saturation on a single instance</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>E2</strong></td>
+<td style="text-align: left;">Auto-Scaled (Elastic)</td>
+<td style="text-align: center;">1 / 1 / 4</td>
+<td style="text-align: center;">150 users spike</td>
+<td style="text-align: left;">Measure scale-out lag, CPU breach, instance addition, and latency recovery</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>E3</strong></td>
+<td style="text-align: left;">Scale-In Verification</td>
+<td style="text-align: center;">4 $\rightarrow$ 1</td>
+<td style="text-align: center;">Post-test idle</td>
+<td style="text-align: left;">Verify ALB connection draining and graceful VM termination</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. Measurements, Metrics, and Analysis Framework</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Measurement Tool</th>
+<th style="text-align: left;">Target Observation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>p50 / p95 / p99 Latency</strong></td>
+<td style="text-align: left;">Locust CSV History</td>
+<td style="text-align: left;">Quantify user response time degradation during spike and recovery after scale-out</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Error Rate (%)</strong></td>
+<td style="text-align: left;">Locust Aggregated Summary</td>
+<td style="text-align: left;">Measure HTTP 502/504 timeouts caused by request queuing during scale-out lag</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Scale-Out Lag (seconds)</strong></td>
+<td style="text-align: left;">ASG Activity History vs Locust Start</td>
+<td style="text-align: left;">Time elapsed between spike arrival and newly launched instance reaching <strong>Healthy</strong> status in Target Group</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>In-Service Capacity</strong></td>
+<td style="text-align: left;">Real-Time ASG Poller (<code>poller.py</code>)</td>
+<td style="text-align: left;">Track instantaneous server count (1 $\rightarrow$ 2 $\rightarrow$ 3 $\rightarrow$ 4 instances)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CPU Utilization (%)</strong></td>
+<td style="text-align: left;">CloudWatch Metric Alarm</td>
+<td style="text-align: left;">Verify breach of the 50% threshold and subsequent load distribution</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>AWS Billing Cost</strong></td>
+<td style="text-align: left;">AWS Budgets &amp; Free Tier Tracker</td>
+<td style="text-align: left;">Verify total expenditure remains strictly <strong>$0.00</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. Team Contributions and Work Allocation</h2>
+<p>Work distribution is allocated based on technical complexity and individual ownership:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Member</th>
+<th style="text-align: left;">Role &amp; Ownership</th>
+<th style="text-align: left;">Primary Responsibilities</th>
+<th style="text-align: left;">Evidence Owned</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Dhyey Patel</strong> <em>(202301415)</em></td>
+<td style="text-align: left;"><strong>Lead Cloud Systems Architect &amp; Infrastructure Engineer</strong> <em>(Primary Lead - ~60%)</em></td>
+<td style="text-align: left;">• Lead end-to-end cloud architecture design.<br>• Authored Python FastAPI microservice (<code>app.py</code>) and multi-worker Dockerfile.<br>• Developed AWS CloudFormation IaC (<code>hotstar-fastapi-cfn.yaml</code>) for 2-AZ VPC, ALB, and ASG.<br>• Implemented CloudWatch 50% CPU alarms and step-scaling policies.<br>• Conducted AWS live deployment in <code>ap-south-1</code> and smoke testing.<br>• Executed Locust load testing and developed ASG real-time instance poller (<code>poller.py</code>).</td>
+<td style="text-align: left;">Live ALB DNS URL, CloudFormation template, AWS Console infrastructure, CloudWatch alarms, Locust execution, and raw metrics.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Jill Chhagnani</strong> <em>(202301273)</em></td>
+<td style="text-align: left;"><strong>Systems Research &amp; Case Study Lead</strong> <em>(2nd Priority - ~25%)</em></td>
+<td style="text-align: left;">• Primary-source literature research across Hotstar engineering publications.<br>• Extracted architectural evolution across 3 eras (2018–2025) and concurrency figures (61.2M).<br>• Designed architectural flow diagrams comparing Hotstar production to the PoC origin tier.<br>• Authored problem statement, scale-out lag formulation, and case background sections.</td>
+<td style="text-align: left;">Research claims log, system architecture diagrams, and case study report drafting.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Jay Patel</strong> <em>(202301430)</em></td>
+<td style="text-align: left;"><strong>Performance Analysis &amp; Cost Modeling Associate</strong> <em>(3rd Priority - ~15%)</em></td>
+<td style="text-align: left;">• Analyzed load test telemetry logs, verifying latency percentiles and error metrics.<br>• Formulated AWS Free Tier zero-cost verification model ($0.00) vs. enterprise pricing estimates.<br>• Conducted data validation across test runs and performed cross-review for report submission and viva defense.</td>
+<td style="text-align: left;">Results analysis tables, AWS pricing calculations, and viva review documentation.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>8. References</h2>
+<ol>
+<li>Hotstar Engineering. <em>Scaling Is Not An Accident</em>. April 2018. <a href="https://blog.hotstar.com/scaling-is-not-an-accident-895140ac84c0">https://blog.hotstar.com/scaling-is-not-an-accident-895140ac84c0</a></li>
+<li>Hotstar Engineering. <em>Scaling the Hotstar Platform for 50M</em>. October 2019. <a href="https://blog.hotstar.com/scaling-the-hotstar-platform-for-50m-a7f96a019add">https://blog.hotstar.com/scaling-the-hotstar-platform-for-50m-a7f96a019add</a></li>
+<li>Hotstar Engineering. <em>T For Tsunami: Dealing with traffic spikes</em>. <a href="https://blog.hotstar.com/t-for-tsunami-dealing-with-traffic-spikes-c22443bcdd3e">https://blog.hotstar.com/t-for-tsunami-dealing-with-traffic-spikes-c22443bcdd3e</a></li>
+<li>Hotstar Engineering. <em>Scaling Infrastructure for Millions: From Challenges to Triumphs (Part 1)</em>. 2023. <a href="https://blog.hotstar.com/scaling-infrastructure-for-millions-from-challenges-to-triumphs-part-1-6099141a99ef">https://blog.hotstar.com/scaling-infrastructure-for-millions-from-challenges-to-triumphs-part-1-6099141a99ef</a></li>
+<li>G. Kamboj. <em>Scaling Hotstar.com for 25 million concurrent viewers</em>. AWS re:Invent 2019, Session CMY302. <a href="https://www.youtube.com/watch?v=cmy302">https://www.youtube.com/watch?v=cmy302</a></li>
+<li>Press Trust of India. <em>India-Aus World Cup final creates record peak viewership of 5.9 cr on Disney+Hotstar</em>. Deccan Herald, 20 Nov 2023.</li>
+<li>exchange4media. <em>JioHotstar: 540.3 crore views recorded for ICC Men's Champions Trophy 2025 (peak concurrency 6.12 crore)</em>. March 2025.</li>
+<li>Amazon Web Services. <em>Step and simple scaling policies for Amazon EC2 Auto Scaling</em>. Accessed November 2026. <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html">https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html</a></li>
+<li>Amazon Web Services. <em>Configure monitoring for Auto Scaling instances</em>. Accessed November 2026. <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/enable-as-instance-metrics.html">https://docs.aws.amazon.com/autoscaling/ec2/userguide/enable-as-instance-metrics.html</a></li>
+<li>Locust.io. <em>Locust Documentation: Custom load shapes and distributed execution</em>. Accessed November 2026. <a href="https://docs.locust.io/en/stable/">https://docs.locust.io/en/stable/</a></li>
+</ol></body></html>
