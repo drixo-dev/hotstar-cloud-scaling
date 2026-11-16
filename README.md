@@ -71,7 +71,10 @@ hotstar-cloud-scaling/
 │   ├── report.html            # Interactive Locust HTML performance report
 │   └── screenshots/           # All 11 required AWS Console evidence screenshots
 └── reports/
-    └── week-1-case-study.pdf  # Week 1 Research and Case Study Report
+    ├── IT457_Group19_Week2_Report.pdf  # Week 2 Comprehensive Study & Architecture Analysis
+    ├── IT457_Group19_Final_Report.pdf  # Final Technical Report (Weeks 1–4 Deliverables)
+    ├── figures/                        # High-resolution ByteByteGo and PoC Architecture diagrams
+    └── week-1-case-study.pdf           # Week 1 Research and Case Study Report
 ```
 
 ---
@@ -79,9 +82,9 @@ hotstar-cloud-scaling/
 ## 5. Pacing & Milestones
 
 - [x] **Week 1:** Case study research and summary ([`reports/week-1-case-study.pdf`](reports/week-1-case-study.pdf)).
-- [x] **Week 2:** Detailed architecture, problem analysis, solution design, and team roles.
+- [x] **Week 2:** Detailed architecture, problem analysis, ByteByteGo diagrams, and PoC plan ([`reports/IT457_Group19_Week2_Report.pdf`](reports/IT457_Group19_Week2_Report.pdf)).
 - [x] **Week 3:** Cloud infrastructure build, high-traffic simulation, metrics collection, and deliverable plots.
-- [ ] **Week 4:** Final written report assembly and submission.
+- [x] **Week 4:** Final Technical Report assembly, evidence dossier, and submission ([`reports/IT457_Group19_Final_Report.pdf`](reports/IT457_Group19_Final_Report.pdf)).
 - [ ] **Week 5:** Viva defense.
 
 ---
