@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900">
+  <defs>
+    <marker id="arr-purple-4" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4F46E5" />
+    </marker>
+    <marker id="arr-blue-4" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284C7" />
+    </marker>
+    <marker id="arr-red-4" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#DC2626" />
+    </marker>
+    <filter id="c-shadow-4" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#F8FAFC" />
+
+  <!-- Title & Subtitle -->
+  <text x="720" y="42" font-family="'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="bold" fill="#0F172A" text-anchor="middle">IT457 Proof of Concept: Multi-AZ AWS Scalability Architecture</text>
+  <text x="720" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" fill="#475569" text-anchor="middle">Theme 1: Automated Horizontal Elasticity (Locust Swarm → ALB → Multi-AZ ASG with CloudWatch Metric Alarms)</text>
+
+  <!-- LEFT COLUMN: TRAFFIC GENERATOR (X: 45, W: 235) -->
+  <rect x="45" y="95" width="235" height="675" rx="14" fill="#EEF2FF" stroke="#818CF8" stroke-width="1.8" />
+  <rect x="65" y="85" width="195" height="22" rx="4" fill="#4F46E5" />
+  <text x="162" y="100" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TRAFFIC GENERATION ENGINE</text>
+
+  <!-- Locust Card -->
+  <g transform="translate(58, 120)" filter="url(#c-shadow-4)">
+    <rect width="210" height="425" rx="8" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.5" />
+    <rect x="12" y="12" width="120" height="20" rx="3" fill="#4F46E5" />
+    <text x="72" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">LOCUST LOAD SWARM</text>
+    <text x="12" y="55" font-family="'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#1E1B4B">Distributed Load</text>
+    <text x="12" y="85" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5">• Up to 250 Concurrent Users</text>
+    <text x="12" y="110" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Hatch Rate: 20 users / second</text>
+    <text x="12" y="135" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Headless execution mode</text>
+    <text x="12" y="165" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5">• Synthetic Workload Endpoints:</text>
+    <text x="20" y="190" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#0F172A">GET /work (Weight: 8)</text>
+    <text x="20" y="210" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#475569">2,000 CPU math iterations</text>
+    <text x="20" y="235" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#0F172A">GET /health (Weight: 2)</text>
+    <text x="20" y="255" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#475569">Instant sub-ms heartbeat</text>
+    <text x="12" y="290" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5">• Empirical Test Run:</text>
+    <text x="20" y="315" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">Total Requests: 55,910</text>
+    <text x="20" y="335" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">Zero 5xx Failures (0.00%)</text>
+    <text x="20" y="355" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">Peak Throughput: 138 req/s</text>
+    <text x="12" y="388" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Emulates Hotstar match start spike</text>
+  </g>
+
+  <!-- Locust Metrics Callout -->
+  <g transform="translate(58, 565)" filter="url(#c-shadow-4)">
+    <rect width="210" height="185" rx="8" fill="#F8FAFC" stroke="#C7D2FE" stroke-width="1.2" />
+    <text x="105" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#1E1B4B" text-anchor="middle">EMPIRICAL OUTCOMES</text>
+    <text x="14" y="55" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Cold Start: 1 instance @ 95% CPU</text>
+    <text x="14" y="78" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Initial Latency: 1,200ms</text>
+    <text x="14" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#059669">• ASG Scaled to 4 Instances</text>
+    <text x="14" y="126" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#059669">• Expanded Latency: 46ms median</text>
+    <text x="14" y="150" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Latency Drop: 96.2% reduction</text>
+  </g>
+
+  <!-- Flow 1: Locust to ALB (Pure 70px open gap between X: 280 and X: 350) -->
+  <path d="M 280 195 L 350 195" fill="none" stroke="#4F46E5" stroke-width="3.5" marker-end="url(#arr-purple-4)" />
+  <rect x="284" y="166" width="62" height="20" rx="3" fill="#4F46E5" />
+  <text x="315" y="180" font-family="'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HTTP/250U</text>
+
+  <!-- RIGHT BIG CONTAINER: AWS REGION VPC (X: 350, W: 1045) -->
+  <rect x="350" y="95" width="1045" height="675" rx="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2" />
+  <rect x="375" y="85" width="460" height="22" rx="4" fill="#334155" />
+  <text x="605" y="100" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AWS REGION: ap-south-1 (MUMBAI) — VPC 10.0.0.0/16 (DUAL-AZ)</text>
+
+  <!-- TOP-LEFT: APPLICATION LOAD BALANCER (X: 370, W: 330, H: 160) -->
+  <g transform="translate(370, 115)" filter="url(#c-shadow-4)">
+    <rect width="330" height="160" rx="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="2" />
+    <rect x="14" y="10" width="110" height="20" rx="4" fill="#0284C7" />
+    <text x="69" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PUBLIC INGRESS</text>
+    <text x="135" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#0369A1">Application Load Balancer</text>
+    <text x="14" y="54" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• DNS: hotstar-alb-2011340704.ap-south-1.elb.amazonaws.com</text>
+    <text x="14" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Port 80 HTTP Ingress with Cross-Zone Load Balancing</text>
+    <text x="14" y="94" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Target Group: Round-robin to healthy EC2 instances</text>
+    <text x="14" y="114" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Health Check: GET /health (15s interval, 2 healthy / 2 unhealthy)</text>
+    <text x="14" y="134" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#0284C7">• Deregistration Delay: 30s connection draining</text>
+  </g>
+
+  <!-- TOP-RIGHT: CLOUDWATCH TELEMETRY & ALARMS (X: 720, W: 655, H: 160) -->
+  <g transform="translate(720, 115)" filter="url(#c-shadow-4)">
+    <rect width="655" height="160" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="2" />
+    <rect x="14" y="10" width="150" height="20" rx="4" fill="#DC2626" />
+    <text x="89" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TELEMETRY &amp; ALARMS</text>
+    <text x="175" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#991B1B">AWS CloudWatch Metric Alarms</text>
+
+    <!-- Scale-Out Alarm Box -->
+    <rect x="14" y="42" width="305" height="106" rx="6" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.2" />
+    <text x="24" y="63" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#DC2626">Scale-Out Alarm: CPU &gt;= 50%</text>
+    <text x="24" y="83" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Period: 1 minute (1 consecutive evaluation)</text>
+    <text x="24" y="103" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Action: Add 1-2 instances immediately</text>
+    <text x="24" y="123" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#DC2626">• Rationale: Headroom before 100% saturation</text>
+
+    <!-- Scale-In Alarm Box -->
+    <rect x="335" y="42" width="305" height="106" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+    <text x="345" y="63" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#334155">Scale-In Alarm: CPU &lt;= 20%</text>
+    <text x="345" y="83" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Period: 3 consecutive evaluations (3 min)</text>
+    <text x="345" y="103" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Action: Drop capacity back towards Min=1</text>
+    <text x="345" y="123" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#475569">• Cooldown: 300s to avoid flapping</text>
+  </g>
+
+  <!-- LOWER CONTAINER: AUTO SCALING GROUP (Y: 330 to 750) -->
+  <rect x="370" y="330" width="1005" height="420" rx="12" fill="#ECFDF5" stroke="#10B981" stroke-width="2" stroke-dasharray="6 4" />
+  
+  <!-- ASG Title Badge: Positioned cleanly in the center (X: 620 to 1120) with NO arrows cutting through -->
+  <rect x="620" y="320" width="500" height="22" rx="4" fill="#059669" />
+  <text x="870" y="335" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AUTO SCALING GROUP: hotstar-asg (Min: 1, Desired: 1, Max: 4)</text>
+
+  <!-- SUBNET 1 (ap-south-1a | X: 385, W: 470) -->
+  <g transform="translate(385, 350)">
+    <rect width="470" height="385" rx="10" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5" />
+    <rect x="14" y="12" width="220" height="22" rx="4" fill="#16A34A" />
+    <text x="124" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PUBLIC SUBNET 1 (ap-south-1a | 10.0.1.0/24)</text>
+
+    <!-- Instance 1: Primary Baseline -->
+    <g transform="translate(15, 48)" filter="url(#c-shadow-4)">
+      <rect width="440" height="150" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5" />
+      <rect x="12" y="12" width="115" height="20" rx="4" fill="#D97706" />
+      <text x="69" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PRIMARY (ACTIVE)</text>
+      <text x="135" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#B45309">EC2 Instance 1 (t3.micro)</text>
+      <text x="12" y="58" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• AMI: Amazon Linux 2023 | 2 vCPUs, 1 GiB RAM</text>
+      <text x="12" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Runtime: FastAPI + Uvicorn (4 worker processes on :80)</text>
+      <text x="12" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Workload: /work CPU matrix burn + /health probe</text>
+      <text x="12" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#D97706">• Baseline capacity (Runs 24/7 at minimum cost: $7.45/mo)</text>
+    </g>
+
+    <!-- Instance 2: Scale-Out Unit -->
+    <g transform="translate(15, 215)" filter="url(#c-shadow-4)">
+      <rect width="440" height="150" rx="8" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5" />
+      <rect x="12" y="12" width="125" height="20" rx="4" fill="#059669" />
+      <text x="74" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">SCALE-OUT UNIT</text>
+      <text x="145" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#065F46">EC2 Instance 2 (t3.micro)</text>
+      <text x="12" y="58" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Launched automatically by CloudWatch High-CPU alarm</text>
+      <text x="12" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• UserData bootstrap runs in 82 seconds from launch</text>
+      <text x="12" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Passes ALB health checks and enters Target Group</text>
+      <text x="12" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Absorbs 50% of incoming load, relieving Instance 1</text>
+    </g>
+  </g>
+
+  <!-- SUBNET 2 (ap-south-1b | X: 885, W: 470) -->
+  <g transform="translate(885, 350)">
+    <rect width="470" height="385" rx="10" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5" />
+    <rect x="14" y="12" width="220" height="22" rx="4" fill="#16A34A" />
+    <text x="124" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PUBLIC SUBNET 2 (ap-south-1b | 10.0.2.0/24)</text>
+
+    <!-- Instance 3: Scale-Out Multi-AZ Unit -->
+    <g transform="translate(15, 48)" filter="url(#c-shadow-4)">
+      <rect width="440" height="150" rx="8" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5" />
+      <rect x="12" y="12" width="135" height="20" rx="4" fill="#059669" />
+      <text x="79" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MULTI-AZ EXPANSION</text>
+      <text x="155" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#065F46">EC2 Instance 3 (t3.micro)</text>
+      <text x="12" y="58" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Multi-AZ rebalancing distributes across Availability Zones</text>
+      <text x="12" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Protects against single AZ physical datacenter outages</text>
+      <text x="12" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Same immutable launch template configuration</text>
+      <text x="12" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Handles third tier of Locust load spike</text>
+    </g>
+
+    <!-- Instance 4: Peak Burst Unit -->
+    <g transform="translate(15, 215)" filter="url(#c-shadow-4)">
+      <rect width="440" height="150" rx="8" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.5" />
+      <rect x="12" y="12" width="135" height="20" rx="4" fill="#059669" />
+      <text x="79" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MAX PEAK CEILING</text>
+      <text x="155" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#065F46">EC2 Instance 4 (t3.micro)</text>
+      <text x="12" y="58" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Reaches Max Capacity = 4 instances under 250 users</text>
+      <text x="12" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Total fleet capacity reaches 8 vCPUs and 4 GiB RAM</text>
+      <text x="12" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• System latency stabilizes at 46ms median</text>
+      <text x="12" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Gracefully scaled in after load test completion</text>
+    </g>
+  </g>
+
+  <!-- CLEAN ORTHOGONAL CONNECTORS IN OPEN CORRIDOR (Y: 275 to 330) -->
+  <!-- ALB to Subnet 1: Straight down at X: 480 (completely misses the ASG badge at X: 620-1120) -->
+  <path d="M 480 275 L 480 350" fill="none" stroke="#0284C7" stroke-width="3" marker-end="url(#arr-blue-4)" />
+
+  <!-- ALB to Subnet 2: Exits ALB at (640, 275), drops to Y=298 in open corridor, runs across to X=1180, drops to Subnet 2 -->
+  <path d="M 640 275 L 640 298 L 1180 298 L 1180 350" fill="none" stroke="#0284C7" stroke-width="3" marker-end="url(#arr-blue-4)" />
+
+  <!-- CloudWatch Scale Trigger: Exits CloudWatch at far right (X: 1300, Y: 275), drops down into ASG at (1300, 330) -->
+  <path d="M 1300 275 L 1300 330" fill="none" stroke="#DC2626" stroke-width="3.5" marker-end="url(#arr-red-4)" />
+  <rect x="1225" y="287" width="145" height="22" rx="4" fill="#DC2626" />
+  <text x="1297" y="302" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ASG Scale Trigger</text>
+
+  <!-- BOTTOM CALLOUT BANNER (Y: 790 to 875) -->
+  <g transform="translate(45, 790)" filter="url(#c-shadow-4)">
+    <rect width="1350" height="85" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="2" />
+    <rect x="18" y="18" width="135" height="50" rx="6" fill="#059669" />
+    <text x="85" y="38" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AUTONOMOUS</text>
+    <text x="85" y="55" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">SCALING</text>
+    <text x="175" y="38" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#065F46">• Proactive 50% CPU Threshold: Prevents queue starvation and CPU thrashing before 100% saturation, providing safety cushion for 82s EC2 boot.</text>
+    <text x="175" y="60" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#065F46">• Dual-AZ High Availability: Automatic cross-zone balancing guarantees resilience against single datacenter failures while maintaining 46ms median response time.</text>
+  </g>
+</svg>

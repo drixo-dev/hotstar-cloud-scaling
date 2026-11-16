@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900">
+  <defs>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#DC2626" />
+    </marker>
+    <filter id="c-shadow-2" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#F8FAFC" />
+
+  <!-- Title & Subtitle -->
+  <text x="720" y="42" font-family="'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="bold" fill="#991B1B" text-anchor="middle">Era 2 Architectural Bottleneck: Service-to-Service Hairpinning</text>
+  <text x="720" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" fill="#475569" text-anchor="middle">Legacy Topology (2019–2022): Self-Managed Kubernetes with Route 53 &amp; External Application Load Balancer Loops</text>
+
+  <!-- TOP LAYER: PUBLIC INTERNET & EXTERNAL ALB TIER (Y: 95 to 235) -->
+  <rect x="50" y="95" width="1340" height="140" rx="14" fill="#FEF2F2" stroke="#F87171" stroke-width="2" stroke-dasharray="6 6" />
+  <rect x="75" y="85" width="460" height="22" rx="4" fill="#DC2626" />
+  <text x="305" y="100" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PUBLIC INTERNET &amp; EXTERNAL ROUTE 53 / APPLICATION LOAD BALANCER TIER</text>
+
+  <!-- Top Card 1: service-a ALB (Left: X: 80, W: 360) -->
+  <g transform="translate(80, 115)" filter="url(#c-shadow-2)">
+    <rect width="360" height="105" rx="8" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5" />
+    <rect x="14" y="10" width="85" height="18" rx="3" fill="#DC2626" />
+    <text x="56" y="23" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ALB POOL 1</text>
+    <text x="110" y="25" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#0F172A">service-a.hotstar.com</text>
+    <text x="14" y="54" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#475569">• External Application Load Balancer</text>
+    <text x="14" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#475569">• Public DNS resolved via AWS Route 53</text>
+    <text x="14" y="94" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#DC2626">• Target of hairpin loop from Cluster 1</text>
+  </g>
+
+  <!-- Top Center Box: Hairpin Explanation (X: 480, W: 480) -->
+  <g transform="translate(480, 115)" filter="url(#c-shadow-2)">
+    <rect width="480" height="105" rx="8" fill="#FFFFFF" stroke="#F87171" stroke-width="1.8" />
+    <rect x="14" y="10" width="165" height="18" rx="3" fill="#991B1B" />
+    <text x="96" y="23" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HAIRPIN FAILURE MODE</text>
+    <text x="190" y="25" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#991B1B">Cross-Cluster RPC Leaves VPC!</text>
+    <text x="14" y="54" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#7F1D1D">• Service B calls public DNS rather than direct pod IPs</text>
+    <text x="14" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#7F1D1D">• Packets exit VPC via NAT Gateway, traverse public Internet</text>
+    <text x="14" y="94" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#DC2626">• Re-enters via NodePort, adding 150ms+ tail latency</text>
+  </g>
+
+  <!-- Top Card 3: 200+ ALBs Overhead (Right: X: 1000, W: 360) -->
+  <g transform="translate(1000, 115)" filter="url(#c-shadow-2)">
+    <rect width="360" height="105" rx="8" fill="#FFFFFF" stroke="#FCA5A5" stroke-width="1.5" />
+    <rect x="14" y="10" width="135" height="18" rx="3" fill="#991B1B" />
+    <text x="81" y="23" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">FLEET OVERHEAD</text>
+    <text x="160" y="25" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#991B1B">200+ Dedicated ALBs</text>
+    <text x="14" y="54" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#7F1D1D">• Required manual pre-warming tickets</text>
+    <text x="14" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#7F1D1D">• Massive cross-AZ data transfer fees</text>
+    <text x="14" y="94" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#7F1D1D">• AWS API rate throttling during spikes</text>
+  </g>
+
+  <!-- BOTTOM LAYER: VPC BOUNDARY (Y: 300 to 770) -->
+  <rect x="50" y="300" width="1340" height="470" rx="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="2" />
+  <rect x="75" y="290" width="410" height="22" rx="4" fill="#334155" />
+  <text x="280" y="305" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AWS REGION: ap-south-1 (MUMBAI) — PRIVATE VPC BOUNDARY</text>
+
+  <!-- Cluster 1 Box (Left: X: 80, W: 610) -->
+  <g transform="translate(80, 325)">
+    <rect width="610" height="425" rx="12" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.8" />
+    <rect x="25" y="14" width="280" height="22" rx="4" fill="#B45309" />
+    <text x="165" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">KUBERNETES CLUSTER 1 (Self-Managed)</text>
+
+    <!-- Service B Card -->
+    <g transform="translate(25, 48)" filter="url(#c-shadow-2)">
+      <rect width="560" height="175" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.5" />
+      <rect x="14" y="14" width="120" height="22" rx="4" fill="#D97706" />
+      <text x="74" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CALLER SERVICE</text>
+      <text x="145" y="31" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#0F172A">Service B (Watch Session Service)</text>
+      <text x="14" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Manages live user streaming sessions and player heartbeats</text>
+      <text x="14" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Needs user entitlement and catalog metadata from Service A</text>
+      <text x="14" y="112" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#DC2626">• Cannot resolve pod IPs across cluster boundaries directly</text>
+      <text x="14" y="134" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#DC2626">• Dispatches external HTTP call out to service-a.hotstar.com</text>
+      <text x="14" y="156" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#475569">• Incurs outbound NAT Gateway transit and TLS handshakes</text>
+    </g>
+
+    <!-- NodePort Worker Nodes Card -->
+    <g transform="translate(25, 235)" filter="url(#c-shadow-2)">
+      <rect width="560" height="175" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.5" />
+      <rect x="14" y="14" width="115" height="22" rx="4" fill="#B45309" />
+      <text x="71" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">WORKER NODES</text>
+      <text x="140" y="31" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#0F172A">NodePort Range: 30000–32767</text>
+      <text x="14" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Fixed range of only 2,767 usable ports across the entire cluster fleet</text>
+      <text x="14" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Port collisions as services scaled up; Target Groups mapped to NodePorts</text>
+      <text x="14" y="112" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• AWS VPC subnet IP exhaustion under rapid container launches (/24 subnets)</text>
+      <text x="14" y="134" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#B45309">• Inefficient kube-proxy iptables rule table with thousands of routes</text>
+      <text x="14" y="156" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#B45309">• NodePort exposed node IPs directly to public VPC routing tables</text>
+    </g>
+  </g>
+
+  <!-- Cluster 2 Box (Right: X: 750, W: 610) -->
+  <g transform="translate(750, 325)">
+    <rect width="610" height="425" rx="12" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.8" />
+    <rect x="25" y="14" width="280" height="22" rx="4" fill="#B45309" />
+    <text x="165" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">KUBERNETES CLUSTER 2 (Self-Managed)</text>
+
+    <!-- Service A Card -->
+    <g transform="translate(25, 48)" filter="url(#c-shadow-2)">
+      <rect width="560" height="175" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.5" />
+      <rect x="14" y="14" width="130" height="22" rx="4" fill="#D97706" />
+      <text x="79" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">RECEIVER SERVICE</text>
+      <text x="155" y="31" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#0F172A">Service A (Entitlement / Catalog API)</text>
+      <text x="14" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Validates subscription status, stream tokens, and device entitlements</text>
+      <text x="14" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Receives internal calls via external public ALB ingress!</text>
+      <text x="14" y="112" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#DC2626">• Re-encrypts and re-negotiates TLS on every internal service hop</text>
+      <text x="14" y="134" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#DC2626">• Doubles origin latency and subjects internal RPCs to public DNS TTLs</text>
+      <text x="14" y="156" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#475569">• Target Group connection limits throttled peak cricket bursts</text>
+    </g>
+
+    <!-- Control Plane Card -->
+    <g transform="translate(25, 235)" filter="url(#c-shadow-2)">
+      <rect width="560" height="175" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.5" />
+      <rect x="14" y="14" width="130" height="22" rx="4" fill="#B45309" />
+      <text x="79" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CONTROL PLANE</text>
+      <text x="155" y="31" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#0F172A">kube-apiserver &amp; etcd Contention</text>
+      <text x="14" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Two large clusters hosting hundreds of microservices simultaneously</text>
+      <text x="14" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• High churn during spikes caused etcd leader election timeouts and raft lag</text>
+      <text x="14" y="112" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#334155">• Lack of failure domain isolation: crash in one service affected entire cluster</text>
+      <text x="14" y="134" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#B45309">• Legacy Kubernetes 1.17 could not run Karpenter or modern VPC CNI</text>
+      <text x="14" y="156" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" fill="#B45309">• Master node scaling took hours, unable to adapt to sudden cricket spikes</text>
+    </g>
+  </g>
+
+  <!-- HAIRPIN ROUTING: CLEAN ORTHOGONAL PATHWAYS THROUGH OPEN GAP (Y: 240 to 290) -->
+  <!-- Step 1: Upward arrow from Service B (Cluster 1) to ALB Pool 1 -->
+  <path d="M 380 373 L 380 225" fill="none" stroke="#DC2626" stroke-width="3.5" marker-end="url(#arr-red)" />
+  <rect x="240" y="250" width="280" height="24" rx="4" fill="#DC2626" />
+  <text x="380" y="266" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1. Outbound RPC to service-a.hotstar.com</text>
+
+  <!-- Step 2: The Hairpin Loop from ALB Pool 1, down through open gap, across to Cluster 2, and into Service A -->
+  <!-- Exits ALB at (430, 220), drops to Y=268 in open gap, runs horizontally to X=1180, then drops to Service A at Y=373 -->
+  <!-- (At X=1180 in Cluster 2, there is zero header text, providing a 100% clean vertical drop!) -->
+  <path d="M 430 220 L 430 268 L 1180 268 L 1180 368" fill="none" stroke="#DC2626" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arr-red)" />
+  
+  <!-- Step 2 Badge placed cleanly on the horizontal line in the open gap -->
+  <rect x="670" y="256" width="200" height="25" rx="4" fill="#DC2626" />
+  <text x="770" y="273" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2. THE HAIRPIN LOOP</text>
+
+  <!-- BOTTOM CALLOUT BANNER (Y: 790 to 875) -->
+  <g transform="translate(50, 790)" filter="url(#c-shadow-2)">
+    <rect width="1340" height="85" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2" />
+    <rect x="18" y="18" width="135" height="50" rx="6" fill="#DC2626" />
+    <text x="85" y="38" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">SYSTEMIC</text>
+    <text x="85" y="55" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">IMPACT</text>
+    <text x="175" y="38" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#991B1B">• Severe Tail Latency Amplification: Each internal RPC incurred Route 53 DNS lookup, external TLS handshake, and extra network hops.</text>
+    <text x="175" y="60" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#991B1B">• Operational Fragility: 200+ ALBs required manual pre-warming tickets with AWS support before every major tournament.</text>
+  </g>
+</svg>

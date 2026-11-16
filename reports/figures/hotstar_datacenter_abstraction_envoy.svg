@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900">
+  <defs>
+    <marker id="arr-em-3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+    </marker>
+    <marker id="arr-blue-3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284C7" />
+    </marker>
+    <filter id="c-shadow-3" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#F8FAFC" />
+
+  <!-- Title & Subtitle -->
+  <text x="720" y="42" font-family="'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="bold" fill="#065F46" text-anchor="middle">Era 3 Architecture: Datacenter Abstraction &amp; Envoy Gateway Mesh</text>
+  <text x="720" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" fill="#475569" text-anchor="middle">Modern Solution (2023–Present): Unified Ingress, Internal Envoy Service Discovery, Multi-Cluster Cell Isolation &amp; Zero ALB Hairpinning</text>
+
+  <!-- TOP INGRESS STRIP (Y: 90 to 220) -->
+  <rect x="50" y="90" width="1340" height="130" rx="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.8" />
+  <rect x="75" y="80" width="340" height="22" rx="4" fill="#334155" />
+  <text x="245" y="95" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PUBLIC EDGE &amp; UNIFIED INGRESS TIER</text>
+
+  <!-- Box 1: Global Viewers -->
+  <g transform="translate(75, 105)" filter="url(#c-shadow-3)">
+    <rect width="320" height="95" rx="8" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1.2" />
+    <rect x="12" y="10" width="100" height="18" rx="3" fill="#4F46E5" />
+    <text x="62" y="22" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CLIENT INGRESS</text>
+    <text x="12" y="46" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#1E1B4B">Global Viewers (60M+)</text>
+    <text x="12" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Multi-CDN Shield &amp; Anycast Edge</text>
+    <text x="12" y="86" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Dynamic Origin Request Routing</text>
+  </g>
+
+  <!-- Arrow 1 to 2 -->
+  <path d="M 395 152 L 455 152" fill="none" stroke="#4F46E5" stroke-width="3" marker-end="url(#arr-blue-3)" />
+
+  <!-- Box 2: Unified Ingress ALBs -->
+  <g transform="translate(455, 105)" filter="url(#c-shadow-3)">
+    <rect width="350" height="95" rx="8" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="1.2" />
+    <rect x="12" y="10" width="115" height="18" rx="3" fill="#0284C7" />
+    <text x="69" y="22" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CONSOLIDATED</text>
+    <text x="12" y="46" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#0369A1">Unified Ingress ALBs</text>
+    <text x="12" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Replaced 200+ legacy public ALBs</text>
+    <text x="12" y="86" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Ingress only: zero internal RPC traffic</text>
+  </g>
+
+  <!-- Arrow 2 to 3 -->
+  <path d="M 805 152 L 865 152" fill="none" stroke="#0284C7" stroke-width="3" marker-end="url(#arr-em-3)" />
+
+  <!-- Box 3: Envoy API Gateway Mesh -->
+  <g transform="translate(865, 105)" filter="url(#c-shadow-3)">
+    <rect width="500" height="95" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5" />
+    <rect x="12" y="10" width="115" height="18" rx="3" fill="#059669" />
+    <text x="69" y="22" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GATEWAY MESH</text>
+    <text x="12" y="46" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#065F46">Envoy API Gateway (Central Datacenter Router)</text>
+    <text x="12" y="68" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Dynamic xDS discovery &amp; internal routing to 6 EKS clusters</text>
+    <text x="12" y="86" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• "Jettison" automated feature-shedding under peak cricket traffic</text>
+  </g>
+
+  <!-- MIDDLE CONTAINER: LOGICAL DATACENTER ABSTRACTION (Y: 245 to 770) -->
+  <rect x="50" y="245" width="1340" height="525" rx="14" fill="#F0FDF4" stroke="#10B981" stroke-width="2" />
+  <rect x="75" y="235" width="620" height="22" rx="4" fill="#059669" />
+  <text x="385" y="250" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">LOGICAL DATACENTER ABSTRACTION (6 Managed EKS Clusters in Mumbai Treated as One Fabric)</text>
+
+  <!-- Clean Distribution from Envoy into Clusters: Two dedicated vertical drops with ZERO text collisions -->
+  <!-- Drop to Cluster 1: Exits Envoy at X: 890, drops through top border (where there is no badge) to Y: 270 (below badge), travels left to X: 480, drops cleanly into Cluster 1 -->
+  <path d="M 890 200 L 890 270 L 480 270 L 480 295" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arr-em-3)" />
+
+  <!-- Drop to Cluster 2: Exits Envoy at X: 1180, drops straight down at X: 1180 into Cluster 2 -->
+  <path d="M 1180 200 L 1180 295" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arr-em-3)" />
+
+  <!-- Cluster 1 (Left: X: 80, W: 570) -->
+  <g transform="translate(80, 295)">
+    <rect width="570" height="455" rx="12" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.8" />
+    <rect x="25" y="14" width="260" height="22" rx="4" fill="#059669" />
+    <text x="155" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AMAZON EKS CLUSTER 1 (Managed)</text>
+
+    <!-- Service B Card -->
+    <g transform="translate(25, 50)" filter="url(#c-shadow-3)">
+      <rect width="520" height="175" rx="8" fill="#F0FDF4" stroke="#A7F3D0" stroke-width="1.5" />
+      <rect x="14" y="12" width="120" height="20" rx="3" fill="#059669" />
+      <text x="74" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CALLER SERVICE</text>
+      <text x="145" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#065F46">Service B (Watch Session Service)</text>
+      <text x="14" y="62" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Manages live user streaming heartbeats and concurrency counters</text>
+      <text x="14" y="84" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Requires instant entitlement checks and catalog metadata from Service A</text>
+      <text x="14" y="106" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Resolved via Envoy Internal Mesh: Private ClusterIP resolution</text>
+      <text x="14" y="128" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Packets STAY INSIDE VPC — Zero Route 53 lookups, Zero ALB hops</text>
+      <text x="14" y="150" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#065F46">• Internal latency reduced from ~150ms to sub-2 milliseconds!</text>
+    </g>
+
+    <!-- Networking Infrastructure Card -->
+    <g transform="translate(25, 245)" filter="url(#c-shadow-3)">
+      <rect width="520" height="185" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" />
+      <rect x="14" y="12" width="130" height="20" rx="3" fill="#334155" />
+      <text x="79" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">NETWORKING CORE</text>
+      <text x="155" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#0F172A">AWS VPC CNI on /19 Subnets</text>
+      <text x="14" y="62" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• 8,190 usable private IP addresses per subnet (zero IP exhaustion)</text>
+      <text x="14" y="84" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Elastic Network Interfaces (ENIs) attached directly to EC2 Nitro instances</text>
+      <text x="14" y="106" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Per-subnet NAT Gateways prevent cross-AZ bottleneck and data transfer costs</text>
+      <text x="14" y="128" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Eliminates legacy NodePort mapping and avoids iptables rule saturation</text>
+      <text x="14" y="150" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#059669">• Pod-to-pod communication flows natively across VPC private routes</text>
+    </g>
+  </g>
+
+  <!-- Cluster 2 (Right: X: 790, W: 570) -->
+  <g transform="translate(790, 295)">
+    <rect width="570" height="455" rx="12" fill="#FFFFFF" stroke="#86EFAC" stroke-width="1.8" />
+    <rect x="25" y="14" width="260" height="22" rx="4" fill="#059669" />
+    <text x="155" y="29" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AMAZON EKS CLUSTER 2 (Managed)</text>
+
+    <!-- Service A Card -->
+    <g transform="translate(25, 50)" filter="url(#c-shadow-3)">
+      <rect width="520" height="175" rx="8" fill="#F0FDF4" stroke="#A7F3D0" stroke-width="1.5" />
+      <rect x="14" y="12" width="135" height="20" rx="3" fill="#059669" />
+      <text x="81" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">RECEIVER SERVICE</text>
+      <text x="160" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#065F46">Service A (Entitlement / Catalog API)</text>
+      <text x="14" y="62" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Receives internal calls directly over private ClusterIP mesh</text>
+      <text x="14" y="84" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Mutual TLS (mTLS) handshake handled transparently via Envoy sidecars</text>
+      <text x="14" y="106" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Completely isolated failure domain: Cluster 2 issues never crash Cluster 1</text>
+      <text x="14" y="128" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Backed by high-throughput ElastiCache Redis replication ring</text>
+      <text x="14" y="150" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#065F46">• Protected by Envoy localized circuit breaking and rate limiting</text>
+    </g>
+
+    <!-- Node Elasticity Card -->
+    <g transform="translate(25, 245)" filter="url(#c-shadow-3)">
+      <rect width="520" height="185" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" />
+      <rect x="14" y="12" width="135" height="20" rx="3" fill="#334155" />
+      <text x="81" y="26" font-family="'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">NODE ELASTICITY</text>
+      <text x="160" y="28" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#0F172A">Karpenter High-Velocity Autoscaler</text>
+      <text x="14" y="62" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Directly provisions right-sized EC2 instances in under 45 seconds</text>
+      <text x="14" y="84" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Replaced legacy Cluster Autoscaler which suffered from 10-15 minute lag</text>
+      <text x="14" y="106" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Diversified across Spot &amp; On-Demand EC2 instance types (c5, m5, r5)</text>
+      <text x="14" y="128" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Automated node consolidation and graceful bin-packing when load subsides</text>
+      <text x="14" y="150" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#059669">• Handles explosive IPL cricket traffic surges without pre-warming tickets</text>
+    </g>
+  </g>
+
+  <!-- DIRECT INTERNAL VPC CALL CONNECTOR IN OPEN AISLE (X: 650 to 790, 140px wide aisle) -->
+  <path d="M 625 425 L 815 425" fill="none" stroke="#059669" stroke-width="4" marker-end="url(#arr-em-3)" />
+  <rect x="650" y="390" width="140" height="40" rx="6" fill="#059669" />
+  <text x="720" y="407" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">DIRECT INTERNAL RPC</text>
+  <text x="720" y="422" font-family="'Segoe UI', Roboto, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">(Zero ALB Hairpinning)</text>
+
+  <!-- BOTTOM CALLOUT BANNER (Y: 790 to 875) -->
+  <g transform="translate(50, 790)" filter="url(#c-shadow-3)">
+    <rect width="1340" height="85" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="2" />
+    <rect x="18" y="18" width="135" height="50" rx="6" fill="#059669" />
+    <text x="85" y="38" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ARCHITECTURAL</text>
+    <text x="85" y="55" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TRIUMPH</text>
+    <text x="175" y="38" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#065F46">• 98.7% Origin Tail Latency Reduction: Internal RPCs avoid external public ALBs entirely, keeping latency strictly under 2ms.</text>
+    <text x="175" y="60" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#065F46">• Cell-Based Resilience: 6 isolated EKS clusters isolate blast radiuses; catastrophic failure in interactive features never affects video playback.</text>
+  </g>
+</svg>

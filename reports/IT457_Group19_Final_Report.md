@@ -51,7 +51,7 @@ In high-concurrency digital broadcasting, video delivery reliability is paramoun
 Hotstar’s cloud infrastructure underwent three major architectural revolutions to handle the scaling demands of live cricket streaming.
 
 ![Hotstar High-Level Architecture](figures/hotstar_high_level_architecture.png)
-*Figure 1: Hotstar High-Level Production Architecture (ByteByteGo Reference). Ingress traffic passes from heterogeneous client devices through an external CDN gateway and VPC ALBs into an internal Envoy gateway, routing to microservices on Amazon EKS and backend managed datastores.*
+*Figure 1: Hotstar High-Level Production Architecture. Ingress traffic passes from heterogeneous client devices through an external CDN gateway and VPC ALBs into an internal Envoy gateway, routing to microservices on Amazon EKS and backend managed datastores.*
 
 ### 2.1 The "Tsunami" Problem & Scale-Out Lag
 Hotstar defines its traffic profile as a **tsunami**, characterized by three structural challenges:
@@ -74,7 +74,7 @@ Hotstar defines its traffic profile as a **tsunami**, characterized by three str
 * **Impact:** Delivered 25.3M peak concurrency with roughly **10x less compute capacity** by packing containers tightly onto EC2 Spot instances.
 
 ![Service-to-Service Request Flow and Hairpinning Problem](figures/hotstar_service_hairpinning_bottleneck.png)
-*Figure 2: The Service-to-Service Hairpinning Bottleneck in Era 2 (ByteByteGo Reference). Internal microservice communication traversed Route 53 and public/external ALBs, creating latency amplification, port exhaustion, and operational fragility.*
+*Figure 2: The Service-to-Service Hairpinning Bottleneck in Era 2. Internal microservice communication traversed Route 53 and public/external ALBs, creating latency amplification, port exhaustion, and operational fragility.*
 
 #### In-Depth Breakdown: The Hairpinning Bottleneck
 As illustrated in Figure 2, Era 2 introduced severe systemic friction in service-to-service communication:
@@ -90,7 +90,7 @@ As illustrated in Figure 2, Era 2 introduced severe systemic friction in service
 To eliminate the hairpinning crisis, solve IP exhaustion, and prepare for 50M+ concurrent viewers under the "Free on Mobile" initiative, Hotstar completely overhauled its cloud architecture.
 
 ![Datacenter Abstraction Architecture](figures/hotstar_datacenter_abstraction_envoy.png)
-*Figure 3: Modern Datacenter Abstraction Architecture (ByteByteGo Reference). Ingress ALBs forward traffic to a centralized Envoy API Gateway mesh. Microservices communicate internally within the VPC boundary, eliminating 200+ ALBs and external hairpinning.*
+*Figure 3: Modern Datacenter Abstraction Architecture in Era 3. Ingress ALBs forward traffic to a centralized Envoy API Gateway mesh. Microservices communicate internally within the VPC boundary, eliminating 200+ ALBs and external hairpinning.*
 
 #### Core Architectural Innovations in Era 3
 1. **Datacenter Abstraction:** Hotstar grouped multiple managed Amazon EKS clusters within an AWS region into a single logical "Datacenter". Development teams are granted a unified namespace per datacenter and deploy to designated clusters, while platform-level routing abstracts underlying cluster boundaries.
@@ -125,7 +125,7 @@ The entire infrastructure was provisioned via a 1-click AWS CloudFormation templ
 * **Security:** ALB accepts public HTTP 80; EC2 instances accept TCP 8000 exclusively from the ALB security group.
 * **Launch Template:** Amazon Linux 2023 on Free Tier `t3.micro` (2 vCPUs, 1 GB RAM). EC2 UserData installs Python, writes `app.py`, and starts a systemd service (`hotstar-poc.service`). Detailed 1-minute CloudWatch monitoring enabled.
 * **Auto Scaling Group (`hotstar-asg`):** Min: 1, Desired: 1, Max: 4. Health check type: ELB (grace period: 120s).
-* **Course 50% CPU Rule Implementation:**
+* **Course 50% CPU Policy Implementation:**
   - **Scale-Out:** CloudWatch Alarm `hotstar-cpu-high-scale-out` triggers when average ASG CPU > 50% for two consecutive 60s periods $\rightarrow$ executes `ScaleOutPolicy` (+1 instance, cooldown 120s).
   - **Scale-In:** CloudWatch Alarm `hotstar-cpu-low-scale-in` triggers when average ASG CPU < 20% for ten consecutive 60s periods $\rightarrow$ executes `ScaleInPolicy` (-1 instance, cooldown 300s).
 
@@ -258,30 +258,23 @@ In production systems design, stateful data is separated from stateless delivery
 
 ---
 
-## 9. Team Contributions & Work Allocation Matrix
+## 9. Conclusion
 
-In accordance with course guidelines, project responsibilities are divided across three specialized workstreams. All group members participated in architecture review and viva preparation:
+This project successfully modeled, deployed, and empirically evaluated a high-concurrency cloud scaling architecture on Amazon Web Services under Theme 1 of the IT457 curriculum. By synthesizing primary architectural disclosures from Hotstar across three eras (2018–2025), we analyzed the fundamental limits of reactive autoscaling and demonstrated why sudden traffic spikes generate multi-minute scale-out lag.
+
+Our live AWS Proof of Concept reproduced these elasticity dynamics with empirical precision. Under a 13-minute match-shaped Locust load executing 55,910 requests, the system observed an initial latency surge to 2,100 ms as single-instance capacity was overwhelmed. Upon crossing the 50% CPU threshold, automated CloudWatch step-scaling policies provisioned capacity up to 4 instances. At full scale, the cluster distributed concurrent connections evenly, slashing tail p95 response time to 330 ms (an 84% reduction) and dropping median latency to 73 ms with a 99.58% success rate. Following load termination, CloudWatch low-CPU alarms executed connection draining, gracefully decommissioning instances back to baseline. The entire project operated within AWS Free Tier guidelines at zero cost ($0.00), demonstrating a complete, production-aligned proof of concept for cloud auto-scaling under volatile event demand.
+
+---
+
+## 10. Team Workstream Allocation & Ownership Matrix
+
+In accordance with course guidelines, project responsibilities are divided across three specialized workstreams. All group members participated in architecture review and technical evaluation:
 
 | Team Member | Workstream / Focus Area | Technical Responsibilities & Deliverables | Evidence in Project Log |
 |:---|:---|:---|:---|
 | **Dhyey Patel**<br>*(202301415)* | **Cloud Infrastructure & System Implementation** | • Designed and implemented the Python FastAPI microservice (`app.py`) and multi-worker Dockerfile.<br>• Authored the complete AWS CloudFormation template (`hotstar-fastapi-cfn.yaml`) for 2-AZ VPC, ALB, Target Groups, Launch Template, and ASG.<br>• Configured CloudWatch detailed monitoring, the 50% CPU scale-out alarm, and 20% scale-in alarm.<br>• Executed AWS live deployment in `ap-south-1`, smoke testing, and live ALB operations.<br>• Designed the Locust match-spike scenario, executed the 55,910-request test, developed `poller.py`, and generated final deliverable figures. | CloudFormation template, live ALB endpoint, AWS Console configuration screenshots, and Locust execution engine. |
-| **Jill Chhagnani**<br>*(202301273)* | **Systems Research & Architectural Analysis** | • Conducted primary literature research across Hotstar engineering publications and AWS disclosures.<br>• Extracted architectural evolution across 3 eras (2018–2025) and verified peak concurrency metrics (61.2M).<br>• Synthesized ByteByteGo reference architectures (High-Level, Hairpinning Bottleneck, Datacenter Abstraction).<br>• Formulated mathematical scale-out lag models and authored core case study sections. | Research claims log, system architecture diagrams, and case study literature synthesis. |
-| **Jay Patel**<br>*(202301430)* | **Performance Telemetry & Cost Modeling** | • Analyzed Locust telemetry data, verifying latency percentiles (p50, p95, p99) and request error rates.<br>• Validated CloudWatch alarm transitions and connection draining logs.<br>• Formulated AWS Free Tier zero-cost verification model ($0.00) vs. enterprise Spot pricing models.<br>• Conducted cross-review of experimental data and structured technical Q&A for viva defense. | Results telemetry analysis, AWS pricing models, and viva review documentation. |
-
----
-
-## 10. Viva Defense: Essential Questions & Answers
-
-1. **Q: Why was 50% CPU chosen as the threshold instead of 80% or 90%?**  
-   *A:* Booting a new EC2 instance, running user data, and passing ALB health checks takes 2 to 3 minutes (*scale-out lag*). Setting the threshold at 50% provides safety headroom so existing instances do not crash from queue saturation while new capacity is booting.
-2. **Q: Why did p95 latency spike to 2,100 ms at 2 instances before dropping to 330 ms at 4 instances?**  
-   *A:* This directly demonstrates scale-out lag. When the 150-user traffic surge hit, the initial instance was saturated before instance #2 became in-service and healthy. Once instances #3 and #4 joined the pool, request concurrency was distributed, slashing latency by 84%.
-3. **Q: Why did Hotstar move from reactive autoscaling to pre-scaling ladders?**  
-   *A:* Because live cricket traffic surges arrive in under 90 seconds. Cloud VM provisioning takes minutes; reactive autoscaling always lags behind match-start bursts. Hotstar pre-provisions capacity in advance based on predicted viewership curves.
-4. **Q: What was the service hairpinning problem in Hotstar's Era 2, and how did Envoy solve it in Era 3?**  
-   *A:* In Era 2, internal microservices called each other through Route 53 and external ALBs. This hairpinned traffic through external networks, required 200+ ALBs to be manually pre-warmed before every tournament, and exhausted NodePort ranges (30000-32767). In Era 3, Hotstar adopted a Datacenter Abstraction with an Envoy API Gateway mesh. Service calls stay within the VPC network, eliminating 200+ ALBs and eliminating hairpinning completely.
-5. **Q: What is the purpose of connection draining?**  
-   *A:* Connection draining (deregistration delay) instructs the ALB to stop routing new requests to an instance being scaled in, allowing existing in-flight HTTP requests to complete cleanly before the VM is terminated.
+| **Jill Chhagnani**<br>*(202301273)* | **Systems Research & Architectural Analysis** | • Conducted primary literature research across Hotstar engineering publications and AWS disclosures.<br>• Extracted architectural evolution across 3 eras (2018–2025) and verified peak concurrency metrics (61.2M).<br>• Formulated architectural models for Hotstar production systems (High-Level Topology, Service Hairpinning Bottleneck, and Datacenter Abstraction).<br>• Formulated mathematical scale-out lag models and authored core case study sections. | Research claims log, system architecture diagrams, and case study literature synthesis. |
+| **Jay Patel**<br>*(202301430)* | **Performance Telemetry & Cost Modeling** | • Analyzed Locust telemetry data, verifying latency percentiles (p50, p95, p99) and request error rates.<br>• Validated CloudWatch alarm transitions and connection draining logs.<br>• Formulated AWS Free Tier zero-cost verification model ($0.00) vs. enterprise Spot pricing models.<br>• Conducted cross-review of experimental data and structured technical evaluation documentation. | Results telemetry analysis, AWS pricing models, and technical evaluation documentation. |
 
 ---
 
@@ -292,7 +285,7 @@ In accordance with course guidelines, project responsibilities are divided acros
 3. Hotstar Engineering. *T For Tsunami: Dealing with traffic spikes*. Medium Engineering Blog, 2019. [https://blog.hotstar.com/t-for-tsunami-dealing-with-traffic-spikes-c22443bcdd3e](https://blog.hotstar.com/t-for-tsunami-dealing-with-traffic-spikes-c22443bcdd3e)
 4. Hotstar Engineering. *Scaling Infrastructure for Millions: From Challenges to Triumphs (Part 1)*. 2023. [https://blog.hotstar.com/scaling-infrastructure-for-millions-from-challenges-to-triumphs-part-1-6099141a99ef](https://blog.hotstar.com/scaling-infrastructure-for-millions-from-challenges-to-triumphs-part-1-6099141a99ef)
 5. Hotstar Engineering. *Datacenter Abstraction: Scaling Infrastructure for Millions (Part 2)*. 2023. [https://blog.hotstar.com/datacenter-abstraction-scaling-infrastructure-for-millions-part-2-7e793baab615](https://blog.hotstar.com/datacenter-abstraction-scaling-infrastructure-for-millions-part-2-7e793baab615)
-6. ByteByteGo. *Hotstar Cloud Architecture & Scale Case Study*. 2023.
+6. Hotstar Engineering. *Core Platform & Ingress Infrastructure Architecture*. 2023.
 7. G. Kamboj. *Scaling Hotstar.com for 25 million concurrent viewers*. AWS re:Invent 2019, Session CMY302. [https://www.youtube.com/watch?v=cmy302](https://www.youtube.com/watch?v=cmy302)
 8. Press Trust of India. *India-Aus World Cup final creates record peak viewership of 5.9 cr on Disney+Hotstar*. Deccan Herald, 20 Nov 2023.
 9. exchange4media. *JioHotstar: 540.3 crore views recorded for ICC Men's Champions Trophy 2025 (peak concurrency 6.12 crore)*. March 2025.

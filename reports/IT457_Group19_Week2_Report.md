@@ -106,7 +106,7 @@ Four million viewers arrive before a single additional VM can accept a TCP conne
 Hotstar’s cloud infrastructure underwent three major architectural revolutions to overcome these scaling barriers.
 
 ![Hotstar High-Level Architecture](figures/hotstar_high_level_architecture.png)
-*Figure 1: Hotstar High-Level Production Architecture (ByteByteGo Reference). Ingress traffic passes from heterogeneous client devices through an external CDN gateway and VPC ALBs into an internal Envoy gateway, routing to microservices on Amazon EKS and backend managed datastores.*
+*Figure 1: Hotstar High-Level Production Architecture. Ingress traffic passes from heterogeneous client devices through an external CDN gateway and VPC ALBs into an internal Envoy gateway, routing to microservices on Amazon EKS and backend managed datastores.*
 
 ### 3.1 Era 1 (2018): Bare EC2, Classic Load Balancers, and "Ladders"
 * **Topology:** Monolithic application services running directly on EC2 instances fronted by over 200 AWS Classic Load Balancers.
@@ -122,7 +122,7 @@ To improve compute efficiency and deployment velocity, Hotstar migrated 40 to 50
 * **Custom Shadow Autoscaler:** Hotstar developed an internal autoscaling engine that evaluated traffic velocity (rate of change of requests) in addition to CPU. The algorithm was run in "shadow mode" for months until its predictions proved reliable.
 
 ![Service-to-Service Request Flow and Hairpinning Problem](figures/hotstar_service_hairpinning_bottleneck.png)
-*Figure 2: The Service-to-Service Hairpinning Bottleneck in Era 2 (ByteByteGo Reference). Internal microservice communication traversed Route 53 and public/external ALBs, creating latency amplification, port exhaustion, and operational fragility.*
+*Figure 2: The Service-to-Service Hairpinning Bottleneck in Era 2. Internal microservice communication traversed Route 53 and public/external ALBs, creating latency amplification, port exhaustion, and operational fragility.*
 
 #### In-Depth Breakdown: The Hairpinning Bottleneck
 As illustrated in Figure 2, Era 2 introduced severe systemic friction in service-to-service communication:
@@ -138,7 +138,7 @@ As illustrated in Figure 2, Era 2 introduced severe systemic friction in service
 To eliminate the hairpinning crisis, solve IP exhaustion, and prepare for 50M+ concurrent viewers under the "Free on Mobile" initiative, Hotstar completely overhauled its cloud architecture.
 
 ![Datacenter Abstraction Architecture](figures/hotstar_datacenter_abstraction_envoy.png)
-*Figure 3: Modern Datacenter Abstraction Architecture (ByteByteGo Reference). Ingress ALBs forward traffic to a centralized Envoy API Gateway mesh. Microservices communicate internally within the VPC boundary, eliminating 200+ ALBs and external hairpinning.*
+*Figure 3: Modern Datacenter Abstraction Architecture in Era 3. Ingress ALBs forward traffic to a centralized Envoy API Gateway mesh. Microservices communicate internally within the VPC boundary, eliminating 200+ ALBs and external hairpinning.*
 
 #### Core Architectural Innovations in Era 3
 1. **Datacenter Abstraction:** Hotstar grouped multiple managed Amazon EKS clusters within an AWS region into a single logical "Datacenter". Development teams are granted a unified namespace per datacenter and deploy to designated clusters, while platform-level routing abstracts underlying cluster boundaries.
@@ -241,13 +241,13 @@ Concurrent Users
 
 ## 7. Workstream Allocation & Ownership Matrix
 
-In accordance with course guidelines, project responsibilities are distributed across three technical workstreams. All team members collaborate on architectural analysis and participate in the viva defense:
+In accordance with course guidelines, project responsibilities are distributed across three technical workstreams. All team members collaborate on architectural analysis and participate in technical evaluation and project defense:
 
 | Team Member | Workstream / Focus Area | Technical Responsibilities & Deliverables | Evidence in Project Log |
 |:---|:---|:---|:---|
 | **Dhyey Patel**<br>*(202301415)* | **Cloud Infrastructure & System Implementation** | • Authored Python FastAPI microservice (`app.py`) and multi-worker Dockerfile.<br>• Developed AWS CloudFormation IaC (`hotstar-fastapi-cfn.yaml`) for 2-AZ VPC, ALB, and ASG.<br>• Implemented CloudWatch 50% CPU alarms, step-scaling policies, and connection draining.<br>• Executed AWS live deployment in `ap-south-1` and live ALB endpoint management.<br>• Engineered Locust load testing scripts (`locustfile.py`) and ASG instance poller (`poller.py`). | CloudFormation template, live ALB endpoint, AWS Console configuration screenshots, and Locust execution engine. |
-| **Jill Chhagnani**<br>*(202301273)* | **Systems Research & Architectural Analysis** | • Conducted primary literature research across Hotstar engineering publications and AWS disclosures.<br>• Extracted architectural evolution across 3 eras (2018–2025) and verified peak concurrency metrics (61.2M).<br>• Synthesized ByteByteGo reference architectures (High-Level, Hairpinning Bottleneck, Datacenter Abstraction).<br>• Formulated mathematical scale-out lag models and authored core case study sections. | Research claims log, system architecture diagrams, and case study literature synthesis. |
-| **Jay Patel**<br>*(202301430)* | **Performance Telemetry & Cost Modeling** | • Analyzed Locust telemetry data, verifying latency percentiles (p50, p95, p99) and request error rates.<br>• Validated CloudWatch alarm transitions and connection draining logs.<br>• Formulated AWS Free Tier zero-cost verification model ($0.00) vs. enterprise Spot pricing models.<br>• Conducted cross-review of experimental data and structured technical Q&A for viva defense. | Results telemetry analysis, AWS pricing models, and viva review documentation. |
+| **Jill Chhagnani**<br>*(202301273)* | **Systems Research & Architectural Analysis** | • Conducted primary literature research across Hotstar engineering publications and AWS disclosures.<br>• Extracted architectural evolution across 3 eras (2018–2025) and verified peak concurrency metrics (61.2M).<br>• Formulated architectural models for Hotstar production systems (High-Level Topology, Service Hairpinning Bottleneck, and Datacenter Abstraction).<br>• Formulated mathematical scale-out lag models and authored core case study sections. | Research claims log, system architecture diagrams, and case study literature synthesis. |
+| **Jay Patel**<br>*(202301430)* | **Performance Telemetry & Cost Modeling** | • Analyzed Locust telemetry data, verifying latency percentiles (p50, p95, p99) and request error rates.<br>• Validated CloudWatch alarm transitions and connection draining logs.<br>• Formulated AWS Free Tier zero-cost verification model ($0.00) vs. enterprise Spot pricing models.<br>• Conducted cross-review of experimental data and structured technical evaluation documentation. | Results telemetry analysis, AWS pricing models, and technical evaluation documentation. |
 
 ---
 
@@ -258,7 +258,7 @@ In accordance with course guidelines, project responsibilities are distributed a
 3. Hotstar Engineering. *T For Tsunami: Dealing with traffic spikes*. Medium Engineering Blog, 2019. [https://blog.hotstar.com/t-for-tsunami-dealing-with-traffic-spikes-c22443bcdd3e](https://blog.hotstar.com/t-for-tsunami-dealing-with-traffic-spikes-c22443bcdd3e)
 4. Hotstar Engineering. *Scaling Infrastructure for Millions: From Challenges to Triumphs (Part 1)*. 2023. [https://blog.hotstar.com/scaling-infrastructure-for-millions-from-challenges-to-triumphs-part-1-6099141a99ef](https://blog.hotstar.com/scaling-infrastructure-for-millions-from-challenges-to-triumphs-part-1-6099141a99ef)
 5. Hotstar Engineering. *Datacenter Abstraction: Scaling Infrastructure for Millions (Part 2)*. 2023. [https://blog.hotstar.com/datacenter-abstraction-scaling-infrastructure-for-millions-part-2-7e793baab615](https://blog.hotstar.com/datacenter-abstraction-scaling-infrastructure-for-millions-part-2-7e793baab615)
-6. ByteByteGo. *Hotstar Cloud Architecture & Scale Case Study*. 2023.
+6. Hotstar Engineering. *Core Platform & Ingress Infrastructure Architecture*. 2023.
 7. G. Kamboj. *Scaling Hotstar.com for 25 million concurrent viewers*. AWS re:Invent 2019, Session CMY302. [https://www.youtube.com/watch?v=cmy302](https://www.youtube.com/watch?v=cmy302)
 8. Press Trust of India. *India-Aus World Cup final creates record peak viewership of 5.9 cr on Disney+Hotstar*. Deccan Herald, 20 Nov 2023.
 9. exchange4media. *JioHotstar: 540.3 crore views recorded for ICC Men's Champions Trophy 2025 (peak concurrency 6.12 crore)*. March 2025.

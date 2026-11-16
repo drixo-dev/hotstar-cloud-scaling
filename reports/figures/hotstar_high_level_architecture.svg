@@ -1,0 +1,267 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900">
+  <defs>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284C7" />
+    </marker>
+    <marker id="arr-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+    </marker>
+    <filter id="c-shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#F8FAFC" />
+
+  <!-- Title & Subtitle -->
+  <text x="720" y="45" font-family="'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="bold" fill="#0F172A" text-anchor="middle">Hotstar Production Cloud Architecture (Modern Era)</text>
+  <text x="720" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" fill="#475569" text-anchor="middle">End-to-End Scalability Pipeline: Multi-CDN Edge Shield → Ingress ALBs → Envoy Gateway → 6 EKS Clusters → Managed Data Tier</text>
+
+  <!-- COLUMN 1: CLIENT TIER (X: 40, W: 220) -->
+  <rect x="40" y="95" width="220" height="770" rx="14" fill="#EEF2FF" stroke="#818CF8" stroke-width="1.8" />
+  <rect x="65" y="85" width="170" height="22" rx="4" fill="#4F46E5" />
+  <text x="150" y="100" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HETEROGENEOUS CLIENTS</text>
+
+  <!-- Mobile Card -->
+  <g transform="translate(55, 125)" filter="url(#c-shadow)">
+    <rect width="190" height="220" rx="8" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.2" />
+    <rect x="10" y="12" width="80" height="18" rx="3" fill="#4F46E5" />
+    <text x="50" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MOBILE APPS</text>
+    <text x="10" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#1E1B4B">Android &amp; iOS</text>
+    <text x="10" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• 60M+ Active Viewers</text>
+    <text x="10" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Low-Latency HLS / DASH</text>
+    <text x="10" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• ExoPlayer / AVPlayer</text>
+    <text x="10" y="146" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Chunk pre-fetch logic</text>
+    <text x="10" y="168" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Client token caching</text>
+    <text x="10" y="190" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Telemetry heartbeats</text>
+  </g>
+
+  <!-- Web Card -->
+  <g transform="translate(55, 370)" filter="url(#c-shadow)">
+    <rect width="190" height="220" rx="8" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.2" />
+    <rect x="10" y="12" width="90" height="18" rx="3" fill="#4F46E5" />
+    <text x="55" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">WEB PLATFORM</text>
+    <text x="10" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#1E1B4B">React Web Player</text>
+    <text x="10" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Desktop browsers</text>
+    <text x="10" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Adaptive bitrate (ABR)</text>
+    <text x="10" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Shaka / Hls.js engine</text>
+    <text x="10" y="146" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Lightweight UI bundles</text>
+    <text x="10" y="168" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Real-time error reports</text>
+    <text x="10" y="190" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• CDN failover routing</text>
+  </g>
+
+  <!-- TV Card -->
+  <g transform="translate(55, 615)" filter="url(#c-shadow)">
+    <rect width="190" height="220" rx="8" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="1.2" />
+    <rect x="10" y="12" width="95" height="18" rx="3" fill="#4F46E5" />
+    <text x="57" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">LIVING ROOM TV</text>
+    <text x="10" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="bold" fill="#1E1B4B">Connected TV</text>
+    <text x="10" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Android TV / Tizen</text>
+    <text x="10" y="102" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Apple TV &amp; FireTV</text>
+    <text x="10" y="124" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• 4K HDR Dolby Vision</text>
+    <text x="10" y="146" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• High-bitrate streams</text>
+    <text x="10" y="168" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Large buffer windows</text>
+    <text x="10" y="190" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#475569">• Low-churn watch state</text>
+  </g>
+
+  <!-- Flow 1: Clients to CDN -->
+  <path d="M 260 480 L 290 480" fill="none" stroke="#4F46E5" stroke-width="3" marker-end="url(#arr-gray)" />
+  <rect x="252" y="468" width="45" height="24" rx="4" fill="#4F46E5" />
+  <text x="274" y="484" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">61.2M</text>
+
+  <!-- COLUMN 2: MULTI-CDN EDGE SHIELD (X: 290, W: 250) -->
+  <rect x="290" y="95" width="250" height="770" rx="14" fill="#E0F2FE" stroke="#38BDF8" stroke-width="1.8" />
+  <rect x="315" y="85" width="200" height="22" rx="4" fill="#0284C7" />
+  <text x="415" y="100" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MULTI-CDN EDGE SHIELD</text>
+
+  <!-- CDN Edge POPs Card -->
+  <g transform="translate(305, 125)" filter="url(#c-shadow)">
+    <rect width="220" height="390" rx="8" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="1.2" />
+    <rect x="12" y="12" width="75" height="18" rx="3" fill="#0284C7" />
+    <text x="49" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EDGE POPs</text>
+    <text x="12" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#0369A1">Akamai &amp; CloudFront</text>
+    <text x="12" y="82" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#0284C7">• 95%+ Cache Offload Ratio</text>
+    <text x="12" y="110" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Static Video Chunks (.m4s)</text>
+    <text x="12" y="136" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• HLS Master / Media Playlists</text>
+    <text x="12" y="162" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Anycast Edge IP Routing</text>
+    <text x="12" y="188" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• TLS 1.3 Termination at Edge</text>
+    <text x="12" y="214" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• AWS Shield DDoS Protection</text>
+    <text x="12" y="240" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Web Application Firewall (WAF)</text>
+    <text x="12" y="266" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Geo-fencing &amp; IP Validation</text>
+    <text x="12" y="296" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#0284C7">• 25+ Tbps Aggregate Peak</text>
+    <text x="12" y="324" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Origin Request Collapsing</text>
+    <text x="12" y="350" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Dynamic Origin Failover</text>
+  </g>
+
+  <!-- Edge Rate Limiting Card -->
+  <g transform="translate(305, 535)" filter="url(#c-shadow)">
+    <rect width="220" height="300" rx="8" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="1.2" />
+    <rect x="12" y="12" width="80" height="18" rx="3" fill="#0369A1" />
+    <text x="52" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EDGE LOGIC</text>
+    <text x="12" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#0369A1">Edge Rate Limiting</text>
+    <text x="12" y="82" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Token Pre-Validation at POP</text>
+    <text x="12" y="108" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Bot &amp; Scraper Filtering</text>
+    <text x="12" y="134" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Rate Limiting per User IP</text>
+    <text x="12" y="160" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Non-cacheable APIs (5%) routed</text>
+    <text x="12" y="186" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Direct route to Mumbai ALBs</text>
+    <text x="12" y="212" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Dynamic TCP connection reuse</text>
+    <text x="12" y="238" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Pre-match static priming</text>
+    <text x="12" y="264" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Origin protection shield</text>
+  </g>
+
+  <!-- Flow 2: Edge to AWS Region -->
+  <path d="M 540 240 L 590 240" fill="none" stroke="#0284C7" stroke-width="3" marker-end="url(#arr-blue)" />
+  <rect x="536" y="228" width="55" height="24" rx="4" fill="#0284C7" />
+  <text x="563" y="244" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5% Origin</text>
+
+  <!-- AWS REGION CONTAINER (X: 570, W: 830) -->
+  <rect x="570" y="95" width="830" height="770" rx="14" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.8" stroke-dasharray="6 6" />
+  <rect x="595" y="85" width="280" height="22" rx="4" fill="#334155" />
+  <text x="735" y="100" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">AWS REGION: ap-south-1 (MUMBAI VPC)</text>
+
+  <!-- SUB-COLUMN A: INGRESS & ENVOY MESH (X: 590, W: 220) -->
+  <!-- Ingress ALBs Card -->
+  <g transform="translate(590, 125)" filter="url(#c-shadow)">
+    <rect width="220" height="240" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5" />
+    <rect x="12" y="12" width="85" height="18" rx="3" fill="#16A34A" />
+    <text x="54" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">INGRESS TIER</text>
+    <text x="12" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#166534">AWS Ingress ALBs</text>
+    <text x="12" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Route 53 Latency Routing</text>
+    <text x="12" y="104" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Cross-Zone Load Balancing</text>
+    <text x="12" y="128" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Unified Ingress Entry Point</text>
+    <text x="12" y="152" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#16A34A">• Replaced 200+ legacy ALBs</text>
+    <text x="12" y="176" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Target Group: Envoy Proxies</text>
+    <text x="12" y="200" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Zero ALB Hairpinning Loops</text>
+  </g>
+
+  <!-- Flow Ingress to Envoy -->
+  <path d="M 700 365 L 700 405" fill="none" stroke="#059669" stroke-width="3" marker-end="url(#arr-emerald)" />
+
+  <!-- Envoy API Gateway Card -->
+  <g transform="translate(590, 410)" filter="url(#c-shadow)">
+    <rect width="220" height="425" rx="8" fill="#F0FDF4" stroke="#10B981" stroke-width="2" />
+    <rect x="12" y="12" width="95" height="18" rx="3" fill="#059669" />
+    <text x="59" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GATEWAY MESH</text>
+    <text x="12" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="bold" fill="#065F46">Envoy API Gateway</text>
+    <text x="12" y="80" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#059669">• Central Datacenter Router</text>
+    <text x="12" y="104" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Dynamic Service Discovery</text>
+    <text x="12" y="128" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Resolves Internal VPC Pod IPs</text>
+    <text x="12" y="154" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#047857">• Graceful Degradation:</text>
+    <text x="20" y="174" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#065F46">"Jettison" Feature Shedding</text>
+    <text x="12" y="198" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Slices Non-Critical APIs</text>
+    <text x="12" y="222" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Protects Video Playlists</text>
+    <text x="12" y="246" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Internal mTLS Encryption</text>
+    <text x="12" y="270" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Distributed Tracing (Jaeger)</text>
+    <text x="12" y="294" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Active Health Checking</text>
+    <text x="12" y="318" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• Cluster Load Shedding</text>
+    <text x="12" y="342" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" fill="#334155">• gRPC &amp; HTTP/2 Ingress</text>
+  </g>
+
+  <!-- SUB-COLUMN B: 6 EKS CLUSTERS (X: 835, W: 310) -->
+  <rect x="835" y="115" width="310" height="720" rx="10" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.8" />
+  <rect x="855" y="105" width="270" height="20" rx="4" fill="#D97706" />
+  <text x="990" y="119" font-family="'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">6 MANAGED AMAZON EKS CLUSTERS</text>
+
+  <!-- Tier 1 Cluster -->
+  <g transform="translate(850, 135)" filter="url(#c-shadow)">
+    <rect width="280" height="210" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.2" />
+    <rect x="12" y="12" width="130" height="18" rx="3" fill="#D97706" />
+    <text x="77" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TIER-1 (ISOLATED CLUSTER)</text>
+    <text x="12" y="48" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#B45309">Streaming Origin Core</text>
+    <text x="12" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Live Playlist &amp; Manifest API</text>
+    <text x="12" y="96" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Player Token &amp; Entitlement</text>
+    <text x="12" y="120" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#D97706">• 100% Guaranteed Origin Compute</text>
+    <text x="12" y="144" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Zero sharing with non-critical pods</text>
+    <text x="12" y="166" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Multi-AZ Pod Anti-Affinity</text>
+  </g>
+
+  <!-- Tier 2 Cluster -->
+  <g transform="translate(850, 365)" filter="url(#c-shadow)">
+    <rect width="280" height="200" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.2" />
+    <rect x="12" y="12" width="135" height="18" rx="3" fill="#B45309" />
+    <text x="79" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TIER-2 (PLATFORM CLUSTERS)</text>
+    <text x="12" y="48" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#B45309">Catalog &amp; Watch APIs</text>
+    <text x="12" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Content Discovery &amp; Search API</text>
+    <text x="12" y="96" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• User Profiles &amp; Watch History</text>
+    <text x="12" y="118" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Device Session Management</text>
+    <text x="12" y="140" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• AWS VPC CNI on /19 Subnets</text>
+    <text x="12" y="162" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• 8,190 IP Addresses per Subnet</text>
+  </g>
+
+  <!-- Tier 3 Cluster -->
+  <g transform="translate(850, 585)" filter="url(#c-shadow)">
+    <rect width="280" height="230" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.2" />
+    <rect x="12" y="12" width="135" height="18" rx="3" fill="#92400E" />
+    <text x="79" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TIER-3 (SHEDDABLE CLUSTERS)</text>
+    <text x="12" y="48" font-family="'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="bold" fill="#B45309">Interactive Social Engine</text>
+    <text x="12" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Real-time Cricket Scores &amp; Stats</text>
+    <text x="12" y="96" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Live Comments &amp; Emoji Feeds</text>
+    <text x="12" y="118" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Interactive Polls &amp; Quiz Engine</text>
+    <text x="12" y="140" font-family="'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="bold" fill="#DC2626">• Shed programmatically during spikes</text>
+    <text x="12" y="164" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Karpenter Node Autoscaler</text>
+    <text x="12" y="186" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• EC2 Spot Fleet (70% savings)</text>
+    <text x="12" y="208" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#334155">• Sub-minute node spinup</text>
+  </g>
+
+  <!-- Flow Envoy to Clusters -->
+  <path d="M 810 240 L 850 240" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arr-emerald)" />
+  <path d="M 810 465 L 850 465" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arr-emerald)" />
+  <path d="M 810 670 L 850 670" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arr-emerald)" />
+
+  <!-- SUB-COLUMN C: MANAGED DATA TIER (X: 1170, W: 210) -->
+  <rect x="1170" y="115" width="210" height="720" rx="10" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1.8" />
+  <rect x="1190" y="105" width="170" height="20" rx="4" fill="#7C3AED" />
+  <text x="1275" y="119" font-family="'Segoe UI', Roboto, sans-serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MANAGED DATA TIER</text>
+
+  <!-- Aurora Postgres Card -->
+  <g transform="translate(1185, 135)" filter="url(#c-shadow)">
+    <rect width="180" height="160" rx="8" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1.2" />
+    <rect x="10" y="12" width="70" height="18" rx="3" fill="#7C3AED" />
+    <text x="45" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">RELATIONAL</text>
+    <text x="10" y="48" font-family="'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="bold" fill="#5B21B6">Aurora Postgres</text>
+    <text x="10" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Multi-AZ Cluster</text>
+    <text x="10" y="96" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Read Replicas</text>
+    <text x="10" y="118" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Subscription DB</text>
+  </g>
+
+  <!-- DynamoDB Card -->
+  <g transform="translate(1185, 315)" filter="url(#c-shadow)">
+    <rect width="180" height="160" rx="8" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1.2" />
+    <rect x="10" y="12" width="60" height="18" rx="3" fill="#7C3AED" />
+    <text x="40" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">NO-SQL</text>
+    <text x="10" y="48" font-family="'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="bold" fill="#5B21B6">DynamoDB</text>
+    <text x="10" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Session Storage</text>
+    <text x="10" y="96" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Auto-scaled RCU/WCU</text>
+    <text x="10" y="118" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Single-digit ms reads</text>
+  </g>
+
+  <!-- ElastiCache Redis Card -->
+  <g transform="translate(1185, 495)" filter="url(#c-shadow)">
+    <rect width="180" height="160" rx="8" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1.2" />
+    <rect x="10" y="12" width="70" height="18" rx="3" fill="#7C3AED" />
+    <text x="45" y="24" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">IN-MEMORY</text>
+    <text x="10" y="48" font-family="'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="bold" fill="#5B21B6">ElastiCache Redis</text>
+    <text x="10" y="74" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Sub-ms Metadata Cache</text>
+    <text x="10" y="96" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Cluster Sharding</text>
+    <text x="10" y="118" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Read Replicas per AZ</text>
+  </g>
+
+  <!-- Kafka & S3 Origin Card -->
+  <g transform="translate(1185, 675)" filter="url(#c-shadow)">
+    <rect width="180" height="145" rx="8" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1.2" />
+    <rect x="10" y="10" width="115" height="18" rx="3" fill="#7C3AED" />
+    <text x="67" y="22" font-family="'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">STREAM &amp; STORAGE</text>
+    <text x="10" y="46" font-family="'Segoe UI', Roboto, sans-serif" font-size="13.5" font-weight="bold" fill="#5B21B6">Kafka &amp; S3 Origin</text>
+    <text x="10" y="70" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• MSK Telemetry Streams</text>
+    <text x="10" y="92" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• Millions of events/sec</text>
+    <text x="10" y="114" font-family="'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#334155">• S3 Video Master Storage</text>
+  </g>
+
+  <!-- Flow Clusters to Data Tier -->
+  <path d="M 1145 480 L 1170 480" fill="none" stroke="#7C3AED" stroke-width="3" marker-end="url(#arr-gray)" />
+
+</svg>
