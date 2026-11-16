@@ -1,0 +1,403 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  IT457 Hotstar Cloud-Scaling Proof of Concept (FastAPI / Python).
+  Provisions a 2-AZ VPC, Application Load Balancer, Launch Template with FastAPI,
+  Auto Scaling Group (min 1, max 4), and CloudWatch 50% CPU Scale-Out / 20% Scale-In Alarms.
+
+Parameters:
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: Latest Amazon Linux 2023 x86_64 AMI ID.
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    AllowedValues: [t3.micro, t2.micro, t3.small]
+    Description: EC2 instance type (t3.micro and t2.micro are Free Tier eligible).
+  KeyName:
+    Type: String
+    Default: ''
+    Description: Optional EC2 Key Pair for SSH debugging. Leave empty if SSH is not needed.
+
+Conditions:
+  HasKeyName: !Not [!Equals [!Ref KeyName, '']]
+
+Resources:
+  # -------------------------------------------------------------
+  # Networking: VPC, 2 Availability Zones, Internet Gateway
+  # -------------------------------------------------------------
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.50.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: hotstar-poc-vpc
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: hotstar-poc-igw
+
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: hotstar-poc-public-rt
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.50.0.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: hotstar-poc-subnet-a
+
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.50.1.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: hotstar-poc-subnet-b
+
+  RouteAssocA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  RouteAssocB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  # -------------------------------------------------------------
+  # Security Groups
+  # -------------------------------------------------------------
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow inbound HTTP from public internet to ALB
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: hotstar-alb-sg
+
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow inbound port 8000 only from the Application Load Balancer
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8000
+          ToPort: 8000
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+      Tags:
+        - Key: Name
+          Value: hotstar-app-sg
+
+  # -------------------------------------------------------------
+  # Application Load Balancer & Target Group
+  # -------------------------------------------------------------
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: hotstar-alb
+      Scheme: internet-facing
+      Type: application
+      SecurityGroups:
+        - !Ref AlbSecurityGroup
+      Subnets:
+        - !Ref SubnetA
+        - !Ref SubnetB
+      Tags:
+        - Key: Name
+          Value: hotstar-alb
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: hotstar-tg
+      Port: 8000
+      Protocol: HTTP
+      TargetType: instance
+      VpcId: !Ref Vpc
+      HealthCheckPath: /health
+      HealthCheckIntervalSeconds: 15
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      Matcher:
+        HttpCode: '200'
+      Tags:
+        - Key: Name
+          Value: hotstar-tg
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+  # -------------------------------------------------------------
+  # IAM Role for Detailed CloudWatch Metrics
+  # -------------------------------------------------------------
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole
+
+  # -------------------------------------------------------------
+  # Launch Template: Amazon Linux 2023 with Python FastAPI Service
+  # -------------------------------------------------------------
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        ImageId: !Ref LatestAmiId
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        SecurityGroupIds:
+          - !Ref AppSecurityGroup
+        KeyName: !If [HasKeyName, !Ref KeyName, !Ref AWS::NoValue]
+        Monitoring:
+          Enabled: true # Detailed 1-minute CloudWatch metrics for rapid autoscaling
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -euxo pipefail
+
+            # 1. Install Python 3 and pip
+            dnf update -y
+            dnf install -y python3-pip
+
+            # 2. Create app directory
+            mkdir -p /opt/hotstar-poc
+            cd /opt/hotstar-poc
+
+            # 3. Write FastAPI application code
+            cat > /opt/hotstar-poc/app.py <<'EOF'
+            import os
+            import socket
+            import time
+            from fastapi import FastAPI, Query
+
+            app = FastAPI(title="Hotstar Cloud Scaling PoC")
+            INSTANCE_ID = os.environ.get("INSTANCE_ID", socket.gethostname())
+
+            @app.get("/")
+            def root():
+                return {
+                    "status": "Stream available",
+                    "service": "hotstar-cloud-scaling-poc",
+                    "instance": INSTANCE_ID
+                }
+
+            @app.get("/health")
+            def health():
+                return {"ok": True, "status": "healthy", "instance": INSTANCE_ID}
+
+            @app.get("/work")
+            def work(n: int = Query(default=300000)):
+                start = time.perf_counter()
+                x = 0
+                for i in range(n):
+                    x += i * i
+                elapsed_ms = round((time.perf_counter() - start) * 1000, 2)
+                return {
+                    "status": "Stream available",
+                    "n": n,
+                    "ms": elapsed_ms,
+                    "instance": INSTANCE_ID
+                }
+            EOF
+
+            # 4. Install FastAPI and Uvicorn
+            pip3 install fastapi "uvicorn[standard]"
+
+            # 5. Get Instance ID from IMDSv2
+            TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60" || true)
+            IID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id || hostname)
+
+            # 6. Create systemd service
+            cat > /etc/systemd/system/hotstar-poc.service <<EOF
+            [Unit]
+            Description=IT457 Hotstar FastAPI Service
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=root
+            WorkingDirectory=/opt/hotstar-poc
+            Environment="INSTANCE_ID=$IID"
+            ExecStart=/usr/local/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --workers 2
+            Restart=always
+            RestartSec=3
+
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+
+            # 7. Start and enable service
+            systemctl daemon-reload
+            systemctl enable --now hotstar-poc
+
+  # -------------------------------------------------------------
+  # Auto Scaling Group
+  # -------------------------------------------------------------
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: hotstar-asg
+      VPCZoneIdentifier:
+        - !Ref SubnetA
+        - !Ref SubnetB
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MinSize: '1'
+      DesiredCapacity: '1'
+      MaxSize: '4'
+      TargetGroupARNs:
+        - !Ref TargetGroup
+      HealthCheckType: ELB
+      HealthCheckGracePeriod: 120
+      MetricsCollection:
+        - Granularity: 1Minute
+          Metrics:
+            - GroupInServiceInstances
+            - GroupDesiredCapacity
+            - GroupTotalInstances
+      Tags:
+        - Key: Name
+          Value: hotstar-app
+          PropagateAtLaunch: true
+
+  # -------------------------------------------------------------
+  # CloudWatch Alarms & Scaling Policies (Course Rule: CPU > 50%)
+  # -------------------------------------------------------------
+  CpuHighAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: hotstar-cpu-high-scale-out
+      AlarmDescription: Trigger scale-out when average ASG CPU exceeds 50%
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref AutoScalingGroup
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 50
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref ScaleOutPolicy
+
+  ScaleOutPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref AutoScalingGroup
+      PolicyType: SimpleScaling
+      AdjustmentType: ChangeInCapacity
+      ScalingAdjustment: 1
+      Cooldown: '120'
+
+  CpuLowAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: hotstar-cpu-low-scale-in
+      AlarmDescription: Trigger scale-in when average ASG CPU drops below 20%
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref AutoScalingGroup
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 10
+      Threshold: 20
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref ScaleInPolicy
+
+  ScaleInPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AutoScalingGroupName: !Ref AutoScalingGroup
+      PolicyType: SimpleScaling
+      AdjustmentType: ChangeInCapacity
+      ScalingAdjustment: -1
+      Cooldown: '300'
+
+# -------------------------------------------------------------
+# Outputs (Live URL for submission)
+# -------------------------------------------------------------
+Outputs:
+  LoadBalancerUrl:
+    Description: Live Application Load Balancer URL to submit
+    Value: !Sub 'http://${LoadBalancer.DNSName}/'
+  LoadBalancerDnsName:
+    Description: DNS name of the Load Balancer
+    Value: !GetAtt LoadBalancer.DNSName
+  AutoScalingGroupName:
+    Description: Name of the Auto Scaling Group
+    Value: !Ref AutoScalingGroup
+  TargetGroupArn:
+    Description: Target Group ARN
+    Value: !Ref TargetGroup
