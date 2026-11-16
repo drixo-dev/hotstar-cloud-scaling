@@ -1,0 +1,10 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+GET,/work,HTTPError('502 Server Error: Connection refused for url: /work'),1,2026-11-16T07:24:03Z,2026-11-16T07:24:03Z
+GET,/health,RemoteDisconnected('Remote end closed connection without response'),2,2026-11-16T07:25:33Z,2026-11-16T07:25:35Z
+GET,/work,HTTPError('504 Server Error: Timeout while reading response from Server for url: /work'),76,2026-11-16T07:24:15Z,2026-11-16T07:31:33Z
+GET,/work,HTTPError('403 Client Error: Forbidden for url: /work'),19,2026-11-16T07:23:27Z,2026-11-16T07:23:28Z
+GET,/work,HTTPError('502 Server Error: Bad Gateway for url: /work'),22,2026-11-16T07:24:12Z,2026-11-16T07:29:41Z
+GET,/health,HTTPError('502 Server Error: Bad Gateway for url: /health'),22,2026-11-16T07:22:54Z,2026-11-16T07:29:42Z
+GET,/health,HTTPError('502 Server Error: Connection refused for url: /health'),1,2026-11-16T07:23:45Z,2026-11-16T07:23:45Z
+GET,/health,HTTPError('403 Client Error: Forbidden for url: /health'),14,2026-11-16T07:23:27Z,2026-11-16T07:23:28Z
+GET,/health,HTTPError('504 Server Error: Timeout while reading response from Server for url: /health'),77,2026-11-16T07:24:15Z,2026-11-16T07:31:32Z
